@@ -1,3 +1,5 @@
+import hashlib
+import json
 import re
 import subprocess
 import time
@@ -9,12 +11,12 @@ from pydantic import BaseModel
 
 from . import templates_def
 from .config import (
-    AI_DIR, BASE_DIR, DEFAULT_LOGO, DEFAULT_QR, GENERATED_DIR, ILLUSTRATOR_DIR, OUTPUT_DPI,
-    PDF_DIR, PNG_DIR, PREVIEW_DIR, PREVIEW_DPI, TEMPLATES_DIR,
+    AI_DIR, BASE_DIR, DEFAULT_LOGO, DEFAULT_QR, GENERATED_DIR, ILLUSTRATOR_DIR, MOCKUP_BG_DIR,
+    MOCKUP_OUT_DIR, OUTPUT_DPI, PDF_DIR, PNG_DIR, PREVIEW_DIR, PREVIEW_DPI, TEMPLATES_DIR,
     UPLOADS_DIR, ensure_dirs, resolve_user_path,
 )
 from .fonts import resolve as resolve_font
-from .services import ai_illust, pdfsvc, qrsvc, render
+from .services import ai_illust, mockupsvc, pdfsvc, qrsvc, render
 from .services.bgremove import BgRemovalUnavailable, remove_background
 from .services.images import process_upload
 from .services.layout import qr_invert
@@ -241,6 +243,119 @@ def open_folder():
     return {"ok": True}
 
 
+# ------------------------------------------------------------------ mockup
+
+class MockupReq(BaseModel):
+    front: Optional[str] = None
+    back: Optional[str] = None
+    scene: str = "clean"          # clean | minimal | dark | desk
+    bg: str = "auto"              # auto | white | black | light | dark | gradient | custom | image
+    custom_color: str = "#f1f2f4"
+    bg_image: Optional[str] = None
+    layout: str = "side"          # side | large | vertical
+    size: int = 60
+    rotation: int = 0
+    perspective: int = 32
+    shadow: int = 55
+    radius: int = 30
+    labels: bool = False
+    width: int = 1280
+    height: int = 800
+
+
+def _mockup_src(rel: Optional[str]):
+    """Accept web paths (/uploads/…, /generated/…, /mockup-backgrounds/…)
+    or project-relative paths for mockup source images."""
+    if not rel:
+        return None
+    rel2 = rel.replace("\\", "/").lstrip("/")
+    prefix_map = {
+        "uploads/": UPLOADS_DIR,
+        "generated/": GENERATED_DIR,
+        "mockups/": BASE_DIR / "mockups",
+    }
+    for prefix, root in prefix_map.items():
+        if rel2.startswith(prefix):
+            p = (BASE_DIR / rel2).resolve()
+            try:
+                p.relative_to(BASE_DIR)
+            except ValueError:
+                return None
+            return p if p.is_file() else None
+    return resolve_user_path(rel, UPLOADS_DIR) or resolve_user_path(rel, GENERATED_DIR)
+
+
+@app.post("/api/mockup/upload/{side}")
+async def mockup_upload(side: str, cid: str = Form(...), file: UploadFile = File(...)):
+    if side not in ("front", "back"):
+        raise HTTPException(400, "side must be front or back")
+    raw = await file.read()
+    if not raw:
+        raise HTTPException(400, "Empty file")
+    from io import BytesIO
+    from PIL import Image, ImageOps
+    try:
+        img = Image.open(BytesIO(raw))
+        img.load()
+        img = ImageOps.exif_transpose(img).convert("RGBA")
+    except Exception as e:
+        raise HTTPException(400, f"Could not read image: {e}")
+    if max(img.size) > 2400:
+        img.thumbnail((2400, 2400), Image.LANCZOS)
+
+    safe_cid = re.sub(r"[^a-zA-Z0-9_-]", "", cid)[:40] or "cid"
+    out_dir = UPLOADS_DIR / "mockup" / safe_cid
+    out_dir.mkdir(parents=True, exist_ok=True)
+    name = f"{time.strftime('%Y%m%d-%H%M%S')}_{side}.png"
+    img.save(out_dir / name, "PNG", optimize=True)
+    rel = f"uploads/mockup/{safe_cid}/{name}"
+    return {"path": rel, "url": f"/{rel}", "width": img.width, "height": img.height}
+
+
+@app.get("/api/mockup/backgrounds")
+def mockup_backgrounds():
+    out = []
+    if MOCKUP_BG_DIR.is_dir():
+        for p in sorted(MOCKUP_BG_DIR.iterdir()):
+            if p.is_file() and p.suffix.lower() in (".png", ".jpg", ".jpeg", ".webp"):
+                out.append({
+                    "name": p.stem,
+                    "path": f"mockups/backgrounds/{p.name}",
+                    "url": f"/mockup-backgrounds/{p.name}",
+                })
+    return out
+
+
+@app.post("/api/mockup/render")
+def mockup_render(req: MockupReq):
+    front = _mockup_src(req.front)
+    back = _mockup_src(req.back)
+    bg_image = _mockup_src(req.bg_image)
+    if not front and not back:
+        raise HTTPException(400, "Upload a front or back image first")
+
+    opts = {
+        "scene": req.scene, "bg": req.bg, "custom_color": req.custom_color,
+        "bg_image": str(bg_image) if bg_image else None,
+        "layout": req.layout, "size": req.size, "rotation": req.rotation,
+        "perspective": req.perspective, "shadow": req.shadow, "radius": req.radius,
+        "labels": req.labels, "width": req.width, "height": req.height,
+    }
+    key = hashlib.md5(json.dumps(
+        {**opts, "front": str(front), "back": str(back)}, sort_keys=True
+    ).encode()).hexdigest()[:16]
+    out = MOCKUP_OUT_DIR / f"mockup_{key}.png"
+    if not out.exists():
+        img = mockupsvc.render(opts, front, back)
+        img.save(out, "PNG")
+        w, h = img.size
+    else:
+        from PIL import Image
+        with Image.open(out) as im:
+            w, h = im.size
+    return {"url": f"/generated/mockups/{out.name}", "width": w, "height": h}
+
+
 # ------------------------------------------------------------------ static
 
 ensure_dirs()  # StaticFiles requires the directories to exist at import time
@@ -249,4 +364,5 @@ app.mount("/uploads", StaticFiles(directory=UPLOADS_DIR), name="uploads")
 app.mount("/generated", StaticFiles(directory=GENERATED_DIR), name="generated")
 app.mount("/templates", StaticFiles(directory=TEMPLATES_DIR), name="templates")
 app.mount("/illustrator", StaticFiles(directory=ILLUSTRATOR_DIR), name="illustrator")
+app.mount("/mockup-backgrounds", StaticFiles(directory=MOCKUP_BG_DIR), name="mockup-backgrounds")
 app.mount("/", StaticFiles(directory=BASE_DIR / "app" / "web", html=True), name="web")

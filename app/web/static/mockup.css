@@ -1,0 +1,91 @@
+/* ---- Mockup page (reuses base vars/components from style.css) ---- */
+
+.mockup-body { background: #eef0f3; }
+
+/* layout: big stage left, controls right */
+.mk-main {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 16px;
+  padding: 16px;
+  max-width: 1500px;
+  margin: 0 auto;
+  align-items: start;
+}
+@media (max-width: 980px) { .mk-main { grid-template-columns: 1fr; } }
+
+.mk-stage {
+  background: #fff; border: 1px solid var(--line); border-radius: 14px;
+  padding: 14px; display: flex; flex-direction: column; gap: 10px;
+  position: sticky; top: 16px;
+}
+.mk-preview {
+  position: relative; border-radius: 10px; overflow: hidden;
+  background: repeating-conic-gradient(#eceef1 0 25%, #f7f8fa 0 50%) 0 0 / 22px 22px;
+  min-height: 320px; display: flex; align-items: center; justify-content: center;
+}
+.mk-preview img { width: 100%; display: block; }
+.mk-empty { text-align: center; color: #6b7280; padding: 70px 20px; }
+.mk-empty-icon { font-size: 44px; margin-bottom: 8px; }
+.mk-empty h3 { margin: 0 0 6px; color: #374151; }
+.mk-empty p { margin: 0; font-size: 14px; line-height: 1.5; }
+.mk-empty a { color: #b45309; font-weight: 600; }
+
+.mk-stagebar { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+
+.mk-panel {
+  background: #fff; border: 1px solid var(--line); border-radius: 14px;
+  padding: 6px 16px 16px;
+}
+.mk-panel section { border-bottom: 1px solid #eef0f3; padding: 14px 0; }
+.mk-panel section:last-child { border-bottom: 0; padding-bottom: 4px; }
+.mk-panel h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .8px; color: #6b7280; margin: 0 0 10px; }
+
+.mk-state { font-style: normal; font-size: 11px; padding: 2px 8px; border-radius: 999px; background: #f3f4f6; color: #9ca3af; margin-left: 6px; }
+.mk-state.on { background: #ecfdf5; color: #059669; }
+
+/* scene chips */
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip-btn {
+  font: inherit; font-size: 13px; padding: 7px 12px; border-radius: 999px;
+  border: 1px solid var(--line); background: #fff; cursor: pointer; color: #374151;
+}
+.chip-btn:hover { border-color: #d1a13a; }
+.chip-btn.sel { background: #111827; color: #fbbf24; border-color: #111827; font-weight: 600; }
+
+/* radios with swatches */
+.radio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; }
+.radio { display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; padding: 4px 2px; }
+.radio input { accent-color: #b45309; }
+.radio .sw {
+  width: 16px; height: 16px; border-radius: 5px; display: inline-block;
+  background: var(--c, #eee); border: 1px solid rgba(0, 0, 0, .15);
+}
+
+/* sliders */
+.slider { display: block; font-size: 13.5px; color: #374151; margin: 0 0 10px; }
+.slider-line { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+.slider-line input[type="range"] { flex: 1; accent-color: #b45309; }
+.slider-line b { font-size: 12px; color: #6b7280; width: 38px; text-align: right; font-weight: 600; }
+.mk-reset { margin-top: 6px; width: 100%; font-size: 13px; }
+
+/* presentation mode */
+.mk-present {
+  position: fixed; inset: 0; z-index: 60;
+  background: radial-gradient(1200px 700px at 50% 30%, #23262d 0%, #101114 70%);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 26px; padding: 40px;
+}
+.mk-present.hidden { display: none; }
+.mk-present-head { text-align: center; color: #f9fafb; }
+.mk-present-head h1 { margin: 0; font-size: 34px; font-weight: 300; letter-spacing: 3px; }
+.mk-present-head h1 b { font-weight: 700; }
+.mk-present-head p { margin: 6px 0 0; color: #9ca3af; letter-spacing: 1.5px; font-size: 14px; text-transform: uppercase; }
+.mk-present-body { width: min(1100px, 92vw); }
+.mk-present-body img { width: 100%; display: block; border-radius: 10px; box-shadow: 0 30px 80px rgba(0, 0, 0, .55); }
+#presentClose {
+  position: absolute; top: 18px; right: 22px; width: 42px; height: 42px;
+  border-radius: 50%; border: 1px solid rgba(255, 255, 255, .3);
+  background: rgba(255, 255, 255, .08); color: #e5e7eb; font-size: 17px; cursor: pointer;
+}
+#presentClose:hover { background: rgba(255, 255, 255, .18); }

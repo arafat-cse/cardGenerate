@@ -37,6 +37,15 @@ header {
 .brand b { font-weight: 700; }
 .head-right { display: flex; gap: 8px; align-items: center; }
 
+/* navbar */
+.nav { display: flex; gap: 6px; align-items: center; }
+.nav-link {
+  color: #d1d5db; text-decoration: none; font-size: 14px;
+  padding: 7px 14px; border-radius: 8px; letter-spacing: .2px;
+}
+.nav-link:hover { color: #fff; background: rgba(255, 255, 255, .08); }
+.nav-link.active { color: #fbbf24; background: rgba(251, 191, 36, .12); font-weight: 600; }
+
 .chip {
   font-size: 12px;
   padding: 4px 10px;

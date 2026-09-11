@@ -8,6 +8,7 @@ Design a two-sided card (front + back) in the browser, then export:
 - **PNG** (front + back, 300 DPI, print-ready)
 - **PDF** (2 pages with 0.125 in bleed)
 - **.ai** (Adobe Illustrator builds the card natively via a script — 2 artboards)
+- **Mockup** — realistic 3D card mockups for customer presentation (see below)
 
 It also does local AI background removal, local QR codes (vCard / link / email / phone,
 with your logo embedded like on the sample noir card), and 10 two-sided templates.
@@ -57,13 +58,38 @@ automation — never touches the internet.
    - `generated/pdf/` – 2-page print PDF with bleed
 7. Click **Send to Illustrator** to have Adobe Illustrator build the same card as a
    real .ai file (2 artboards). The .ai is saved to `generated/ai/<job>/card.ai`.
+8. Click **Open in Mockup** to send the generated front/back PNGs straight to the
+   Mockup page — no downloading and re-uploading.
+
+### Mockup page (customer presentation)
+
+Open **Mockup** in the top navbar (or `/mockup.html`). It turns any card PNG into a
+realistic product mockup: true 3D perspective, rounded corners, soft shadow, glossy
+highlight, on a professional background.
+
+- Upload **front only**, **back only**, or both — only what you upload is shown,
+  never an empty placeholder card.
+- Scenes: Clean / Minimal / Dark / Desk. Backgrounds: white, black, light gray,
+  dark gray, gradient, custom color — or your own photo dropped into
+  `mockups/backgrounds/` (it appears in the Background → Image list).
+- Live sliders: card size, rotation, perspective, shadow, corner radius, and
+  front+back layout (side by side / front large + back small / vertical).
+- **Customer Preview** shows a clean fullscreen presentation (title + mockup only);
+  `Esc` closes it.
+- **Download Mockup PNG** exports at 1920×1080, 2560×1440, square 1080×1080 or a
+  custom size — the preview is exactly what downloads (files also land in
+  `generated/mockups/`).
+
+The mockup is rendered by the same local engine as everything else — no internet,
+no external images.
 
 ### Folders
 
 ```
-uploads/      your logos / photos / QR images / originals (never leaves the PC)
-generated/    png | pdf | preview | ai outputs
+uploads/      your logos / photos / QR images / mockup images (never leaves the PC)
+generated/    png | pdf | preview | ai | mockups outputs
 templates/    template-01 … template-10 (template.json is plain editable JSON)
+mockups/      backgrounds/ — drop your own photo backdrops here (used by the Mockup page)
 illustrator/  scripts/  the ExtendScript + job hand-off
               jobs/      per-render config, assets and card.ai
 assets/       your standing designs, used automatically for every card:

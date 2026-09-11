@@ -225,12 +225,31 @@ async function generate() {
     for (const o of res.outputs) {
       toast(`Created: ${res.outputs.map((o) => o.name).join(", ")}`, false, 6000);
     }
+    // remember the generated PNGs so they can be sent straight to the Mockup page
+    const front = res.outputs.find((o) => o.url.includes("_front"));
+    const back = res.outputs.find((o) => o.url.includes("_back"));
+    if (front || back) {
+      state.lastPng = { front: front ? front.url : null, back: back ? back.url : null };
+      $("#btnMockup").classList.remove("hidden");
+    }
     await refreshOutputs();
   } catch (e) {
     toast(e.message, true);
   } finally {
     busy(false);
   }
+}
+
+function openInMockup() {
+  const p = state.lastPng || {};
+  const q = new URLSearchParams();
+  if (p.front) q.set("front", p.front);
+  if (p.back) q.set("back", p.back);
+  if (!q.toString()) {
+    toast("Generate PNG + PDF first — then the front/back images can be sent to the Mockup.", true);
+    return;
+  }
+  window.location.href = "/mockup.html?" + q.toString();
 }
 
 async function sendToIllustrator() {
@@ -296,6 +315,7 @@ async function init() {
   $("#btnPreview").addEventListener("click", updatePreview);
   $("#btnGenerate").addEventListener("click", generate);
   $("#btnAI").addEventListener("click", sendToIllustrator);
+  $("#btnMockup").addEventListener("click", openInMockup);
   $("#openFolder").addEventListener("click", () => api("/api/open-folder", { method: "POST" }));
 
   try {

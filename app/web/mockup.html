@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bizcardbd — Mockup</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23111827'/%3E%3Crect x='5' y='9' width='22' height='14' rx='3' fill='none' stroke='%23f59e0b' stroke-width='2'/%3E%3Ccircle cx='11' cy='16' r='2.4' fill='%23f59e0b'/%3E%3Crect x='16' y='13' width='8' height='2' rx='1' fill='%23e5e7eb'/%3E%3Crect x='16' y='17.5' width='6' height='2' rx='1' fill='%236b7280'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/static/style.css">
+<link rel="stylesheet" href="/static/mockup.css">
+</head>
+<body class="mockup-body">
+<header>
+  <div class="brand">
+    <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#111827"/><rect x="5" y="9" width="22" height="14" rx="3" fill="none" stroke="#f59e0b" stroke-width="2"/><circle cx="11" cy="16" r="2.4" fill="#f59e0b"/><rect x="16" y="13" width="8" height="2" rx="1" fill="#e5e7eb"/><rect x="16" y="17.5" width="6" height="2" rx="1" fill="#6b7280"/></svg>
+    Bizcardbd
+  </div>
+  <nav class="nav">
+    <a class="nav-link" href="/">Card Generator</a>
+    <a class="nav-link active" href="/mockup.html">Mockup</a>
+    <a class="nav-link" href="/#templates">Templates</a>
+  </nav>
+  <div class="head-right">
+    <button id="openFolder" class="ghost" type="button">Open output folder</button>
+  </div>
+</header>
+
+<main class="mk-main">
+  <section class="mk-stage">
+    <div class="mk-preview">
+      <img id="mkImg" alt="Card mockup">
+      <div id="mkEmpty" class="mk-empty">
+        <div class="mk-empty-icon">🪪</div>
+        <h3>No card image yet</h3>
+        <p>Upload a <b>front</b> and/or <b>back</b> PNG on the right —<br>or generate a card in the <a href="/">Card Generator</a> and click “Open in Mockup”.</p>
+      </div>
+    </div>
+    <div class="mk-stagebar">
+      <span id="mkInfo" class="muted"></span>
+      <button id="btnPresent" class="primary" type="button">Customer Preview</button>
+    </div>
+  </section>
+
+  <aside class="mk-panel">
+    <section>
+      <h2>Card images</h2>
+      <div class="row2">
+        <div class="upbox">
+          <span class="up-title">Front <em id="stFront" class="mk-state">no file</em></span>
+          <div class="dropzone" data-side="front"><input type="file" accept="image/*" hidden>
+            <span class="dz-hint">Click or drop PNG</span>
+          </div>
+          <div class="thumbrow hidden">
+            <img alt="front">
+            <div class="thumb-btns">
+              <button type="button" class="mini danger" data-clear="front">Clear</button>
+            </div>
+          </div>
+        </div>
+        <div class="upbox">
+          <span class="up-title">Back <em id="stBack" class="mk-state">no file</em></span>
+          <div class="dropzone" data-side="back"><input type="file" accept="image/*" hidden>
+            <span class="dz-hint">Click or drop PNG</span>
+          </div>
+          <div class="thumbrow hidden">
+            <img alt="back">
+            <div class="thumb-btns">
+              <button type="button" class="mini danger" data-clear="back">Clear</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="hint">Only the sides you upload are shown — never an empty placeholder card.</p>
+    </section>
+
+    <section>
+      <h2>Scene</h2>
+      <div class="chip-row" id="sceneRow">
+        <button type="button" class="chip-btn sel" data-scene="clean">Scene 01 · Clean</button>
+        <button type="button" class="chip-btn" data-scene="minimal">Scene 02 · Minimal</button>
+        <button type="button" class="chip-btn" data-scene="dark">Scene 03 · Dark</button>
+        <button type="button" class="chip-btn" data-scene="desk">Scene 04 · Desk</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Background</h2>
+      <div class="radio-grid" id="bgRow">
+        <label class="radio"><input type="radio" name="mkbg" value="auto" checked><span>Scene default</span></label>
+        <label class="radio"><input type="radio" name="mkbg" value="white"><span><i class="sw" style="--c:#ffffff"></i>White</span></label>
+        <label class="radio"><input type="radio" name="mkbg" value="light"><span><i class="sw" style="--c:#f1f2f4"></i>Light Gray</span></label>
+        <label class="radio"><input type="radio" name="mkbg" value="gradient"><span><i class="sw" style="--c:linear-gradient(135deg,#f8f9fb,#dbdfe6)"></i>Gradient</span></label>
+        <label class="radio"><input type="radio" name="mkbg" value="black"><span><i class="sw" style="--c:#131417"></i>Black</span></label>
+        <label class="radio"><input type="radio" name="mkbg" value="dark"><span><i class="sw" style="--c:#1b1d22"></i>Dark Gray</span></label>
+        <label class="radio"><input type="radio" name="mkbg" value="custom"><span>Custom</span></label>
+        <label class="radio"><input type="radio" name="mkbg" value="image"><span>Image</span></label>
+      </div>
+      <div class="grid2" style="margin-top:10px">
+        <label id="customWrap" class="hidden">Custom color
+          <input type="color" id="customColor" value="#f2f3f5">
+        </label>
+        <label id="imageWrap" class="hidden">Background image
+          <select id="bgImageSel"><option value="">— none —</option></select>
+        </label>
+      </div>
+      <p class="hint">Want your own photo backdrop? Drop images into <b>mockups/backgrounds/</b> and they appear here.</p>
+    </section>
+
+    <section id="layoutSec">
+      <h2>Layout <span class="muted">(front + back)</span></h2>
+      <div class="radio-grid" id="layoutRow">
+        <label class="radio"><input type="radio" name="mklayout" value="side" checked><span>Side by side</span></label>
+        <label class="radio"><input type="radio" name="mklayout" value="large"><span>Front large + back small</span></label>
+        <label class="radio"><input type="radio" name="mklayout" value="vertical"><span>Vertical</span></label>
+      </div>
+    </section>
+
+    <section>
+      <h2>Card</h2>
+      <label class="slider">Card size
+        <span class="slider-line"><input type="range" id="ctlSize" min="30" max="85" value="60"><b id="valSize">60</b></span>
+      </label>
+      <label class="slider">Rotation
+        <span class="slider-line"><input type="range" id="ctlRot" min="-20" max="20" value="0"><b id="valRot">0°</b></span>
+      </label>
+      <label class="slider">Perspective
+        <span class="slider-line"><input type="range" id="ctlPersp" min="0" max="100" value="32"><b id="valPersp">32</b></span>
+      </label>
+      <label class="slider">Shadow
+        <span class="slider-line"><input type="range" id="ctlShadow" min="0" max="100" value="55"><b id="valShadow">55</b></span>
+      </label>
+      <label class="slider">Corner radius
+        <span class="slider-line"><input type="range" id="ctlRadius" min="0" max="100" value="30"><b id="valRadius">30</b></span>
+      </label>
+      <label class="check"><input type="checkbox" id="ctlLabels"> Show FRONT / BACK labels</label>
+      <button type="button" class="ghost mk-reset" id="btnReset">Reset to professional defaults</button>
+    </section>
+
+    <section>
+      <h2>Export</h2>
+      <div class="grid2">
+        <label>Resolution
+          <select id="exportSize">
+            <option value="1920x1080">1920 × 1080 (Full HD)</option>
+            <option value="2560x1440">2560 × 1440 (QHD)</option>
+            <option value="1080x1080">1080 × 1080 (square)</option>
+            <option value="custom">Custom…</option>
+          </select>
+        </label>
+        <div class="grid2">
+          <label>Width<input type="number" id="expW" min="320" max="3840" value="1920"></label>
+          <label>Height<input type="number" id="expH" min="240" max="3840" value="1080"></label>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="btnDownload" class="primary" type="button">Download Mockup PNG</button>
+      </div>
+    </section>
+  </aside>
+</main>
+
+<div id="present" class="mk-present hidden">
+  <button id="presentClose" type="button" title="Close (Esc)">✕</button>
+  <div class="mk-present-head">
+    <h1>Bizcardbd</h1>
+    <p>Your Digital Business Card</p>
+  </div>
+  <div class="mk-present-body"><img id="presentImg" alt="Customer preview"></div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script src="/static/mockup.js"></script>
+</body>
+</html>
