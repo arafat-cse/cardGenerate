@@ -1,0 +1,192 @@
+{
+  "id": "template-08",
+  "name": "Split Brand",
+  "desc": "Solid brand panel on the left, contact block on the right",
+  "v": 3,
+  "palette": {
+    "bg": "#FFFFFF",
+    "panel": "#14532D",
+    "ink": "#1F2937",
+    "sub": "#6B7280",
+    "accent": "#14532D",
+    "line": "#14532D",
+    "onpanel": "#FFFFFF"
+  },
+  "sides": {
+    "front": {
+      "background": [
+        {
+          "t": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "fill": "bg",
+          "bleed": true
+        },
+        {
+          "t": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 0.375,
+          "h": 1,
+          "fill": "panel",
+          "bleed": true
+        }
+      ],
+      "elements": [
+        {
+          "t": "image",
+          "role": "logo",
+          "x": 0.11,
+          "y": 0.3,
+          "w": 0.155,
+          "h": 0.27,
+          "fit": "contain"
+        },
+        {
+          "t": "text",
+          "field": "company",
+          "x": 0.055,
+          "y": 0.635,
+          "w": 0.265,
+          "h": 0.05,
+          "size": 7.5,
+          "font": "sansBold",
+          "color": "onpanel",
+          "align": "center",
+          "caps": true,
+          "track": 0.14
+        },
+        {
+          "t": "text",
+          "field": "name",
+          "x": 0.47,
+          "y": 0.325,
+          "w": 0.46,
+          "h": 0.09,
+          "size": 12,
+          "font": "sansBold",
+          "color": "ink",
+          "align": "left"
+        },
+        {
+          "t": "text",
+          "field": "title",
+          "x": 0.47,
+          "y": 0.445,
+          "w": 0.46,
+          "h": 0.05,
+          "size": 7.5,
+          "font": "sans",
+          "color": "accent",
+          "align": "left",
+          "caps": true,
+          "track": 0.1
+        },
+        {
+          "t": "line",
+          "x1": 0.47,
+          "y1": 0.535,
+          "x2": 0.56,
+          "y2": 0.535,
+          "stroke": "accent",
+          "w": 0.6
+        },
+        {
+          "t": "text",
+          "field": [
+            "phone",
+            "email"
+          ],
+          "x": 0.47,
+          "y": 0.585,
+          "w": 0.46,
+          "h": 0.05,
+          "size": 7.5,
+          "font": "sans",
+          "color": "ink",
+          "align": "left"
+        },
+        {
+          "t": "text",
+          "field": "website",
+          "x": 0.47,
+          "y": 0.65,
+          "w": 0.46,
+          "h": 0.05,
+          "size": 7.5,
+          "font": "sans",
+          "color": "accent",
+          "align": "left"
+        },
+        {
+          "t": "text",
+          "field": "address",
+          "x": 0.47,
+          "y": 0.715,
+          "w": 0.46,
+          "h": 0.05,
+          "size": 7,
+          "font": "sans",
+          "color": "sub",
+          "align": "left"
+        },
+        {
+          "t": "qr",
+          "x": 0.855,
+          "y": 0.8,
+          "w": 0.1,
+          "h": 0.13,
+          "invert": false
+        }
+      ]
+    },
+    "back": {
+      "background": [
+        {
+          "t": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "fill": "panel",
+          "bleed": true
+        }
+      ],
+      "elements": [
+        {
+          "t": "image",
+          "role": "logo",
+          "x": 0.13,
+          "y": 0.27,
+          "w": 0.26,
+          "h": 0.46,
+          "fit": "contain",
+          "fallback_text": true,
+          "fb_size": 11,
+          "fb_font": "sansBold",
+          "fb_color": "ink",
+          "fb_track": 0.06
+        },
+        {
+          "t": "line",
+          "x1": 0.475,
+          "y1": 0.22,
+          "x2": 0.475,
+          "y2": 0.78,
+          "stroke": "line",
+          "w": 1.2
+        },
+        {
+          "t": "qr",
+          "x": 0.565,
+          "y": 0.26,
+          "w": 0.3,
+          "h": 0.48,
+          "invert": true
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BizCard Studio</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23111827'/%3E%3Crect x='5' y='9' width='22' height='14' rx='3' fill='none' stroke='%23f59e0b' stroke-width='2'/%3E%3Ccircle cx='11' cy='16' r='2.4' fill='%23f59e0b'/%3E%3Crect x='16' y='13' width='8' height='2' rx='1' fill='%23e5e7eb'/%3E%3Crect x='16' y='17.5' width='6' height='2' rx='1' fill='%236b7280'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+  <div class="brand">
+    <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#111827"/><rect x="5" y="9" width="22" height="14" rx="3" fill="none" stroke="#f59e0b" stroke-width="2"/><circle cx="11" cy="16" r="2.4" fill="#f59e0b"/><rect x="16" y="13" width="8" height="2" rx="1" fill="#e5e7eb"/><rect x="16" y="17.5" width="6" height="2" rx="1" fill="#6b7280"/></svg>
+    BizCard <b>Studio</b>
+  </div>
+  <div class="head-right">
+    <span id="fontNote" class="chip subtle" title="Font used by the Noir Classic template"></span>
+    <span id="aiStatus" class="chip subtle">checking Illustrator…</span>
+    <button id="openFolder" class="ghost" type="button">Open output folder</button>
+  </div>
+</header>
+
+<main>
+  <aside class="panel">
+    <section>
+      <h2>Template</h2>
+      <div id="templates" class="tpl-grid"></div>
+    </section>
+
+    <section>
+      <h2>Card details</h2>
+      <div class="grid2">
+        <label>Company<input data-f="company" placeholder="Acme Ltd."></label>
+        <label>Full name<input data-f="name" placeholder="Jubaer Ahmed"></label>
+        <label>Title / role<input data-f="title" placeholder="Managing Director"></label>
+        <label>Tagline<input data-f="tagline" placeholder="Design · Print · Brand"></label>
+      </div>
+    </section>
+
+    <section>
+      <h2>Contact</h2>
+      <div class="grid2">
+        <label>Phone<input data-f="phone" placeholder="+880 1712 345678"></label>
+        <label>Email<input data-f="email" placeholder="hello@acme.com"></label>
+        <label>Website<input data-f="website" placeholder="acme.com"></label>
+        <label>Address<input data-f="address" placeholder="121 Farmgate, Dhaka"></label>
+      </div>
+    </section>
+
+    <section>
+      <h2>Logo &amp; photo</h2>
+      <div class="row2">
+        <div class="upbox">
+          <span class="up-title">Logo (PNG with transparent bg is best)</span>
+          <div class="dropzone" data-kind="logos"><input type="file" accept="image/*" hidden>
+            <span class="dz-hint">Click or drop image</span>
+          </div>
+          <div class="thumbrow hidden">
+            <img alt="logo">
+            <div class="thumb-btns">
+              <button type="button" class="mini" data-bg="logos">Remove background</button>
+              <button type="button" class="mini danger" data-clear="logos">Clear</button>
+            </div>
+          </div>
+        </div>
+        <div class="upbox">
+          <span class="up-title">Photo (for Portrait template)</span>
+          <div class="dropzone" data-kind="photos"><input type="file" accept="image/*" hidden>
+            <span class="dz-hint">Click or drop image</span>
+          </div>
+          <div class="thumbrow hidden">
+            <img alt="photo">
+            <div class="thumb-btns">
+              <button type="button" class="mini" data-bg="photos">Remove background</button>
+              <button type="button" class="mini danger" data-clear="photos">Clear</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>QR code (on the back)</h2>
+      <div class="grid2">
+        <label>QR contains
+          <select id="qrType">
+            <option value="vcard">vCard — all contact info</option>
+            <option value="url">Website link</option>
+            <option value="email">Email</option>
+            <option value="phone">Phone number</option>
+            <option value="none">No QR code</option>
+          </select>
+        </label>
+        <label id="qrValueWrap" class="hidden">Value<input id="qrValue" placeholder="acme.com / mail / phone"></label>
+      </div>
+      <label class="check"><input type="checkbox" id="qrLogo" checked> Put the logo inside the QR (like sample card)</label>
+    </section>
+
+    <div class="actions">
+      <button id="btnPreview" class="primary" type="button">Update preview</button>
+      <button id="btnGenerate" type="button">Generate PNG + PDF</button>
+      <button id="btnAI" type="button">Send to Illustrator (.ai)</button>
+    </div>
+    <p class="hint">Card: 3.5 × 2 in + 0.125 in bleed · PNG 300 DPI · PDF has 2 pages (front/back) · Illustrator creates a 2-artboard .ai</p>
+  </aside>
+
+  <section class="stage">
+    <div class="preview-wrap">
+      <img id="preview" alt="Card preview">
+      <div class="muted" id="previewInfo">Loading…</div>
+    </div>
+    <div id="outputs" class="outputs"></div>
+  </section>
+</main>
+
+<div id="busy" class="overlay hidden"><div class="spinner"></div><span id="busyText">Working…</span></div>
+<div id="toast" class="toast hidden"></div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

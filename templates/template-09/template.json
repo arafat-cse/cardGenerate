@@ -1,0 +1,213 @@
+{
+  "id": "template-09",
+  "name": "Mono Minimal",
+  "desc": "Ultra-clean black on white with one rule",
+  "v": 3,
+  "palette": {
+    "bg": "#FFFFFF",
+    "ink": "#111111",
+    "sub": "#555555",
+    "accent": "#111111",
+    "line": "#111111",
+    "panel": "#FFFFFF"
+  },
+  "sides": {
+    "front": {
+      "background": [
+        {
+          "t": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "fill": "bg",
+          "bleed": true
+        }
+      ],
+      "elements": [
+        {
+          "t": "image",
+          "role": "logo",
+          "x": 0.08,
+          "y": 0.095,
+          "w": 0.115,
+          "h": 0.1,
+          "fit": "contain"
+        },
+        {
+          "t": "text",
+          "field": "company",
+          "x": 0.6,
+          "y": 0.1,
+          "w": 0.32,
+          "h": 0.05,
+          "size": 7.5,
+          "font": "sans",
+          "color": "ink",
+          "align": "right",
+          "caps": true,
+          "track": 0.2
+        },
+        {
+          "t": "text",
+          "field": "name",
+          "x": 0.08,
+          "y": 0.375,
+          "w": 0.62,
+          "h": 0.085,
+          "size": 11,
+          "font": "sansBold",
+          "color": "ink",
+          "align": "left"
+        },
+        {
+          "t": "text",
+          "field": "title",
+          "x": 0.08,
+          "y": 0.475,
+          "w": 0.62,
+          "h": 0.045,
+          "size": 7.5,
+          "font": "sans",
+          "color": "sub",
+          "align": "left"
+        },
+        {
+          "t": "line",
+          "x1": 0.08,
+          "y1": 0.565,
+          "x2": 0.24,
+          "y2": 0.565,
+          "stroke": "line",
+          "w": 1.1
+        },
+        {
+          "t": "text",
+          "field": [
+            "phone",
+            "email"
+          ],
+          "x": 0.08,
+          "y": 0.62,
+          "w": 0.62,
+          "h": 0.05,
+          "size": 7.5,
+          "font": "sans",
+          "color": "ink",
+          "align": "left"
+        },
+        {
+          "t": "text",
+          "field": "website",
+          "x": 0.08,
+          "y": 0.685,
+          "w": 0.62,
+          "h": 0.05,
+          "size": 7,
+          "font": "sans",
+          "color": "sub",
+          "align": "left"
+        },
+        {
+          "t": "text",
+          "field": "address",
+          "x": 0.08,
+          "y": 0.75,
+          "w": 0.62,
+          "h": 0.05,
+          "size": 7,
+          "font": "sans",
+          "color": "sub",
+          "align": "left"
+        },
+        {
+          "t": "qr",
+          "x": 0.865,
+          "y": 0.8,
+          "w": 0.085,
+          "h": 0.115,
+          "invert": false
+        }
+      ]
+    },
+    "back": {
+      "background": [
+        {
+          "t": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "fill": "bg",
+          "bleed": true
+        }
+      ],
+      "elements": [
+        {
+          "t": "image",
+          "role": "logo",
+          "x": 0.375,
+          "y": 0.2,
+          "w": 0.25,
+          "h": 0.22,
+          "fit": "contain"
+        },
+        {
+          "t": "line",
+          "x1": 0.42,
+          "y1": 0.47,
+          "x2": 0.58,
+          "y2": 0.47,
+          "stroke": "line",
+          "w": 0.6
+        },
+        {
+          "t": "text",
+          "field": "company",
+          "x": 0.1,
+          "y": 0.5,
+          "w": 0.8,
+          "h": 0.06,
+          "size": 8.5,
+          "font": "serifBold",
+          "color": "ink",
+          "align": "center",
+          "caps": true,
+          "track": 0.2
+        },
+        {
+          "t": "text",
+          "field": "tagline",
+          "x": 0.1,
+          "y": 0.575,
+          "w": 0.8,
+          "h": 0.05,
+          "size": 7,
+          "font": "serifItal",
+          "color": "sub",
+          "align": "center"
+        },
+        {
+          "t": "qr",
+          "x": 0.43,
+          "y": 0.66,
+          "w": 0.14,
+          "h": 0.24,
+          "invert": false
+        },
+        {
+          "t": "text",
+          "field": "website",
+          "x": 0.1,
+          "y": 0.92,
+          "w": 0.8,
+          "h": 0.045,
+          "size": 6.5,
+          "font": "sans",
+          "color": "sub",
+          "align": "center"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,24 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# your uploaded images (logos / photos / originals)
+uploads/
+
+# generated outputs (png / pdf / preview / ai)
+generated/
+
+# temporary Illustrator job hand-off
+illustrator/jobs/
+
+# local machine-specific override
+illustrator_path.txt
+
+# Windows junk
+Thumbs.db
+desktop.ini
+
+# NOTE: kept in git on purpose:
+#   app/ , assets/ (default logo), fonts/ , templates/ , main.py ,
+#   start.bat , setup.bat , run.sh , requirements.txt , README.md

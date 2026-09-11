@@ -1,0 +1,191 @@
+{
+  "id": "template-03",
+  "name": "Midnight Lux",
+  "desc": "Charcoal black, gold serif name, right-aligned company",
+  "v": 3,
+  "palette": {
+    "bg": "#101318",
+    "ink": "#F2F3F5",
+    "sub": "#9AA3AD",
+    "accent": "#C9A227",
+    "line": "#C9A227",
+    "panel": "#FFFFFF"
+  },
+  "sides": {
+    "front": {
+      "background": [
+        {
+          "t": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "fill": "bg",
+          "bleed": true
+        },
+        {
+          "t": "rect",
+          "x": 0.035,
+          "y": 0.055,
+          "w": 0.93,
+          "h": 0.89,
+          "stroke": "accent",
+          "strokeW": 0.45
+        }
+      ],
+      "elements": [
+        {
+          "t": "image",
+          "role": "logo",
+          "x": 0.07,
+          "y": 0.095,
+          "w": 0.22,
+          "h": 0.15,
+          "fit": "contain"
+        },
+        {
+          "t": "text",
+          "field": "company",
+          "x": 0.5,
+          "y": 0.105,
+          "w": 0.425,
+          "h": 0.05,
+          "size": 8,
+          "font": "sans",
+          "color": "ink",
+          "align": "right",
+          "caps": true,
+          "track": 0.18
+        },
+        {
+          "t": "text",
+          "field": "name",
+          "x": 0.07,
+          "y": 0.45,
+          "w": 0.55,
+          "h": 0.105,
+          "size": 12.5,
+          "font": "serifBold",
+          "color": "accent",
+          "align": "left"
+        },
+        {
+          "t": "text",
+          "field": "title",
+          "x": 0.07,
+          "y": 0.575,
+          "w": 0.55,
+          "h": 0.05,
+          "size": 7.5,
+          "font": "sans",
+          "color": "sub",
+          "align": "left",
+          "caps": true,
+          "track": 0.14
+        },
+        {
+          "t": "line",
+          "x1": 0.07,
+          "y1": 0.665,
+          "x2": 0.21,
+          "y2": 0.665,
+          "stroke": "accent",
+          "w": 0.5
+        },
+        {
+          "t": "text",
+          "field": [
+            "phone",
+            "email"
+          ],
+          "x": 0.07,
+          "y": 0.7,
+          "w": 0.6,
+          "h": 0.05,
+          "size": 7.5,
+          "font": "sans",
+          "color": "ink",
+          "align": "left"
+        },
+        {
+          "t": "text",
+          "field": "website",
+          "x": 0.07,
+          "y": 0.765,
+          "w": 0.6,
+          "h": 0.05,
+          "size": 7.5,
+          "font": "sans",
+          "color": "accent",
+          "align": "left"
+        },
+        {
+          "t": "text",
+          "field": "address",
+          "x": 0.07,
+          "y": 0.83,
+          "w": 0.6,
+          "h": 0.05,
+          "size": 7,
+          "font": "sans",
+          "color": "sub",
+          "align": "left"
+        },
+        {
+          "t": "qr",
+          "x": 0.845,
+          "y": 0.785,
+          "w": 0.1,
+          "h": 0.14,
+          "invert": true
+        }
+      ]
+    },
+    "back": {
+      "background": [
+        {
+          "t": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "fill": "bg",
+          "bleed": true
+        }
+      ],
+      "elements": [
+        {
+          "t": "image",
+          "role": "logo",
+          "x": 0.13,
+          "y": 0.27,
+          "w": 0.26,
+          "h": 0.46,
+          "fit": "contain",
+          "fallback_text": true,
+          "fb_size": 11,
+          "fb_font": "sansBold",
+          "fb_color": "ink",
+          "fb_track": 0.06
+        },
+        {
+          "t": "line",
+          "x1": 0.475,
+          "y1": 0.22,
+          "x2": 0.475,
+          "y2": 0.78,
+          "stroke": "line",
+          "w": 1.2
+        },
+        {
+          "t": "qr",
+          "x": 0.565,
+          "y": 0.26,
+          "w": 0.3,
+          "h": 0.48,
+          "invert": true
+        }
+      ]
+    }
+  }
+}

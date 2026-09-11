@@ -1,0 +1,198 @@
+{
+  "id": "template-10",
+  "name": "Portrait Focus",
+  "desc": "Big circular photo on the right, contacts on the left",
+  "v": 3,
+  "palette": {
+    "bg": "#FFFFFF",
+    "ink": "#2D2A26",
+    "sub": "#8A8378",
+    "accent": "#C05621",
+    "line": "#C05621",
+    "panel": "#F5EDE4"
+  },
+  "sides": {
+    "front": {
+      "background": [
+        {
+          "t": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "fill": "bg",
+          "bleed": true
+        },
+        {
+          "t": "ellipse",
+          "x": 0.565,
+          "y": 0.145,
+          "w": 0.37,
+          "h": 0.71,
+          "stroke": "accent",
+          "strokeW": 1.0,
+          "circle": true
+        }
+      ],
+      "elements": [
+        {
+          "t": "image",
+          "role": "photo",
+          "x": 0.585,
+          "y": 0.175,
+          "w": 0.33,
+          "h": 0.64,
+          "fit": "cover",
+          "shape": "circle",
+          "fallback_logo": true,
+          "fb_fill": "panel",
+          "fb_size": 8,
+          "fb_font": "sansBold",
+          "fb_color": "accent"
+        },
+        {
+          "t": "text",
+          "field": "company",
+          "x": 0.07,
+          "y": 0.125,
+          "w": 0.46,
+          "h": 0.06,
+          "size": 9.5,
+          "font": "sansBold",
+          "color": "accent",
+          "align": "left",
+          "caps": true,
+          "track": 0.14
+        },
+        {
+          "t": "text",
+          "field": "name",
+          "x": 0.07,
+          "y": 0.4,
+          "w": 0.46,
+          "h": 0.09,
+          "size": 11.5,
+          "font": "sansBold",
+          "color": "ink",
+          "align": "left"
+        },
+        {
+          "t": "text",
+          "field": "title",
+          "x": 0.07,
+          "y": 0.51,
+          "w": 0.46,
+          "h": 0.05,
+          "size": 7.5,
+          "font": "sans",
+          "color": "sub",
+          "align": "left",
+          "caps": true,
+          "track": 0.1
+        },
+        {
+          "t": "line",
+          "x1": 0.07,
+          "y1": 0.6,
+          "x2": 0.17,
+          "y2": 0.6,
+          "stroke": "accent",
+          "w": 0.7
+        },
+        {
+          "t": "text",
+          "field": [
+            "phone",
+            "email"
+          ],
+          "x": 0.07,
+          "y": 0.645,
+          "w": 0.46,
+          "h": 0.05,
+          "size": 7.5,
+          "font": "sans",
+          "color": "ink",
+          "align": "left"
+        },
+        {
+          "t": "text",
+          "field": "website",
+          "x": 0.07,
+          "y": 0.71,
+          "w": 0.46,
+          "h": 0.05,
+          "size": 7.5,
+          "font": "sans",
+          "color": "accent",
+          "align": "left"
+        },
+        {
+          "t": "text",
+          "field": "address",
+          "x": 0.07,
+          "y": 0.775,
+          "w": 0.46,
+          "h": 0.05,
+          "size": 7,
+          "font": "sans",
+          "color": "sub",
+          "align": "left"
+        },
+        {
+          "t": "qr",
+          "x": 0.07,
+          "y": 0.835,
+          "w": 0.085,
+          "h": 0.11,
+          "invert": false
+        }
+      ]
+    },
+    "back": {
+      "background": [
+        {
+          "t": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "fill": "bg",
+          "bleed": true
+        }
+      ],
+      "elements": [
+        {
+          "t": "image",
+          "role": "logo",
+          "x": 0.13,
+          "y": 0.27,
+          "w": 0.26,
+          "h": 0.46,
+          "fit": "contain",
+          "fallback_text": true,
+          "fb_size": 11,
+          "fb_font": "sansBold",
+          "fb_color": "ink",
+          "fb_track": 0.06
+        },
+        {
+          "t": "line",
+          "x1": 0.475,
+          "y1": 0.22,
+          "x2": 0.475,
+          "y2": 0.78,
+          "stroke": "line",
+          "w": 1.2
+        },
+        {
+          "t": "qr",
+          "x": 0.565,
+          "y": 0.26,
+          "w": 0.3,
+          "h": 0.48,
+          "invert": false
+        }
+      ]
+    }
+  }
+}
