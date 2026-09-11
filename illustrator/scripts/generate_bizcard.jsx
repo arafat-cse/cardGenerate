@@ -129,7 +129,7 @@
     }
 
     function drawImage(doc, L, T, it, dy) {
-        var f = new File(jobDir + "/assets/" + it.src);
+        var f = new File(jobDir + "/assets/" + it.src + ".png");
         if (!f.exists) return;
         var pl = doc.placedItems.add();
         pl.file = f;
@@ -154,6 +154,8 @@
             ring.move(g, ElementPlacement.PLACEATBEGINNING);
             g.clipped = true;
         }
+        // embed so the .ai is self-contained (no broken links when moved)
+        try { pl.embed(); } catch (eEmbed) {}
     }
 
     function drawText(doc, L, T, it, dy) {

@@ -9,7 +9,7 @@ from pydantic import BaseModel
 
 from . import templates_def
 from .config import (
-    AI_DIR, BASE_DIR, DEFAULT_LOGO, GENERATED_DIR, ILLUSTRATOR_DIR, OUTPUT_DPI,
+    AI_DIR, BASE_DIR, DEFAULT_LOGO, DEFAULT_QR, GENERATED_DIR, ILLUSTRATOR_DIR, OUTPUT_DPI,
     PDF_DIR, PNG_DIR, PREVIEW_DIR, PREVIEW_DPI, TEMPLATES_DIR,
     UPLOADS_DIR, ensure_dirs, resolve_user_path,
 )
@@ -51,6 +51,7 @@ class RenderReq(BaseModel):
     data: CardData
     logo: Optional[str] = None
     photo: Optional[str] = None
+    qr_image: Optional[str] = None
     qr: QrCfg = QrCfg()
 
 
@@ -72,6 +73,15 @@ def _assets_of(req: RenderReq) -> dict:
 
 
 def _qr_of(req: RenderReq, tpl: dict):
+    # an uploaded QR image (or assets/qr.png) is placed on the back as-is;
+    # otherwise a QR is generated from the card data
+    path = resolve_user_path(req.qr_image, UPLOADS_DIR)
+    if not path and req.qr.type != "none" and DEFAULT_QR.is_file():
+        path = DEFAULT_QR
+    if path:
+        from PIL import Image
+        return Image.open(path)
+
     logo_img = None
     logo_path = _assets_of(req)["logo"]
     if logo_path and req.qr.logo_in_qr:
@@ -109,8 +119,8 @@ def list_templates():
 
 @app.post("/api/upload/{kind}")
 async def upload(kind: str, cid: str = Form(...), file: UploadFile = File(...)):
-    if kind not in ("logos", "photos"):
-        raise HTTPException(400, "kind must be logos or photos")
+    if kind not in ("logos", "photos", "qr"):
+        raise HTTPException(400, "kind must be logos, photos or qr")
     raw = await file.read()
     if not raw:
         raise HTTPException(400, "Empty file")

@@ -5,6 +5,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 UPLOADS_DIR = BASE_DIR / "uploads"
 LOGOS_DIR = UPLOADS_DIR / "logos"
 PHOTOS_DIR = UPLOADS_DIR / "photos"
+QR_DIR = UPLOADS_DIR / "qr"
 ORIGINALS_DIR = UPLOADS_DIR / "originals"
 
 GENERATED_DIR = BASE_DIR / "generated"
@@ -15,6 +16,7 @@ AI_DIR = GENERATED_DIR / "ai"
 
 ASSETS_DIR = BASE_DIR / "assets"
 DEFAULT_LOGO = ASSETS_DIR / "default_logo.png"
+DEFAULT_QR = ASSETS_DIR / "qr.png"
 
 TEMPLATES_DIR = BASE_DIR / "templates"
 ILLUSTRATOR_DIR = BASE_DIR / "illustrator"
@@ -24,8 +26,8 @@ FONTS_DIR = BASE_DIR / "fonts"
 
 WEB_DIR = Path(__file__).resolve().parent / "web"
 
-CARD_W_IN = 3.5
-CARD_H_IN = 2.0
+CARD_W_IN = 86 / 25.4   # 86 mm
+CARD_H_IN = 54 / 25.4   # 54 mm
 BLEED_IN = 0.125
 
 MASTER_DPI = 600
@@ -33,7 +35,7 @@ OUTPUT_DPI = 300
 PREVIEW_DPI = 150
 
 _ALL_DIRS = [
-    LOGOS_DIR, PHOTOS_DIR, ORIGINALS_DIR,
+    LOGOS_DIR, PHOTOS_DIR, QR_DIR, ORIGINALS_DIR,
     PNG_DIR, PDF_DIR, PREVIEW_DIR, AI_DIR,
     TEMPLATES_DIR, SCRIPTS_DIR, JOBS_DIR, FONTS_DIR, ASSETS_DIR,
 ]

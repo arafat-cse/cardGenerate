@@ -12,9 +12,11 @@ import re
 from PIL import Image
 
 from .config import DEFAULT_LOGO, TEMPLATES_DIR
+from .services import qrsvc
+from .services.layout import qr_invert
 from .services.render import render_stacked
 
-TEMPLATE_VERSION = 3
+TEMPLATE_VERSION = 5
 
 SAMPLE_DATA = {
     "company": "Northwind Studio",
@@ -29,70 +31,15 @@ SAMPLE_DATA = {
 
 # ---------------------------------------------------------------- back sides
 
-def back_duo(dark: bool, bg_key: str = "bg", fb_color: str = "ink") -> dict:
+def back_qr(dark: bool, bg_key: str = "bg", line_key: str = "line") -> dict:
+    """Dynamic back side — resolved at render time by layout._qr_back_side:
+    QR + photo -> photo | divider | QR; photo only -> centered photo;
+    QR only -> QR centered."""
     return {
         "background": [{"t": "rect", "x": 0, "y": 0, "w": 1, "h": 1, "fill": bg_key, "bleed": True}],
-        "elements": [
-            {"t": "image", "role": "logo", "x": 0.13, "y": 0.27, "w": 0.26, "h": 0.46,
-             "fit": "contain", "fallback_text": True, "fb_size": 11,
-             "fb_font": "sansBold", "fb_color": fb_color, "fb_track": 0.06},
-            {"t": "line", "x1": 0.475, "y1": 0.22, "x2": 0.475, "y2": 0.78,
-             "stroke": "line", "w": 1.2},
-            {"t": "qr", "x": 0.565, "y": 0.26, "w": 0.30, "h": 0.48, "invert": dark},
-        ],
-    }
-
-
-def back_centered(qr_invert: bool = False) -> dict:
-    return {
-        "background": [{"t": "rect", "x": 0, "y": 0, "w": 1, "h": 1, "fill": "bg", "bleed": True}],
-        "elements": [
-            {"t": "image", "role": "logo", "x": 0.375, "y": 0.20, "w": 0.25, "h": 0.22, "fit": "contain"},
-            {"t": "line", "x1": 0.42, "y1": 0.47, "x2": 0.58, "y2": 0.47, "stroke": "line", "w": 0.6},
-            {"t": "text", "field": "company", "x": 0.10, "y": 0.50, "w": 0.80, "h": 0.06,
-             "size": 8.5, "font": "serifBold", "color": "ink", "align": "center",
-             "caps": True, "track": 0.20},
-            {"t": "text", "field": "tagline", "x": 0.10, "y": 0.575, "w": 0.80, "h": 0.05,
-             "size": 7, "font": "serifItal", "color": "sub", "align": "center"},
-            {"t": "qr", "x": 0.43, "y": 0.66, "w": 0.14, "h": 0.24, "invert": qr_invert},
-            {"t": "text", "field": "website", "x": 0.10, "y": 0.92, "w": 0.80, "h": 0.045,
-             "size": 6.5, "font": "sans", "color": "sub", "align": "center"},
-        ],
-    }
-
-
-def back_band() -> dict:
-    return {
-        "background": [
-            {"t": "rect", "x": 0, "y": 0, "w": 1, "h": 1, "fill": "bg", "bleed": True},
-            {"t": "rect", "x": 0, "y": 0, "w": 1, "h": 0.30, "fill": "band", "bleed": True},
-        ],
-        "elements": [
-            {"t": "image", "role": "logo", "x": 0.055, "y": 0.05, "w": 0.13, "h": 0.195, "fit": "contain"},
-            {"t": "text", "field": "company", "x": 0.22, "y": 0.10, "w": 0.55, "h": 0.075,
-             "size": 10, "font": "sansBold", "color": "onband", "align": "left", "track": 0.04},
-            {"t": "image", "role": "logo", "x": 0.115, "y": 0.425, "w": 0.21, "h": 0.40, "fit": "contain"},
-            {"t": "line", "x1": 0.455, "y1": 0.475, "x2": 0.455, "y2": 0.80, "stroke": "line", "w": 1.0},
-            {"t": "qr", "x": 0.525, "y": 0.44, "w": 0.24, "h": 0.42, "invert": False},
-            {"t": "text", "field": ["phone", "email"], "x": 0.10, "y": 0.885, "w": 0.80, "h": 0.05,
-             "size": 7.5, "font": "sans", "color": "sub", "align": "center"},
-        ],
-    }
-
-
-def back_cut() -> dict:
-    return {
-        "background": [
-            {"t": "rect", "x": 0, "y": 0, "w": 1, "h": 1, "fill": "bg", "bleed": True},
-            {"t": "poly", "pts": [[0.60, 1.04], [1.04, 1.04], [1.04, 0.34]], "fill": "accent"},
-        ],
-        "elements": [
-            {"t": "image", "role": "logo", "x": 0.10, "y": 0.28, "w": 0.20, "h": 0.40, "fit": "contain"},
-            {"t": "text", "field": "company", "x": 0.07, "y": 0.74, "w": 0.40, "h": 0.07,
-             "size": 9, "font": "sansBold", "color": "ink", "align": "left", "track": 0.04},
-            {"t": "line", "x1": 0.40, "y1": 0.27, "x2": 0.40, "y2": 0.73, "stroke": "line", "w": 0.75},
-            {"t": "qr", "x": 0.475, "y": 0.28, "w": 0.29, "h": 0.44, "invert": False},
-        ],
+        "dynamic": "qr_back",
+        "invert": dark,
+        "line_key": line_key,
     }
 
 
@@ -123,7 +70,7 @@ def templates() -> list[dict]:
                      "caps": True, "track": 0.18},
                 ],
             },
-            "back": back_duo(dark=True),
+            "back": back_qr(dark=True),
         },
     })
 
@@ -142,7 +89,7 @@ def templates() -> list[dict]:
                     {"t": "rect", "x": 0.055, "y": 0.072, "w": 0.89, "h": 0.856, "stroke": "accent", "strokeW": 0.25},
                 ],
                 "elements": [
-                    {"t": "image", "role": "logo", "x": 0.40, "y": 0.085, "w": 0.20, "h": 0.155, "fit": "contain"},
+                    {"t": "image", "role": "logo", "x": 0.775, "y": 0.09, "w": 0.14, "h": 0.105, "fit": "contain"},
                     {"t": "text", "field": "company", "x": 0.10, "y": 0.265, "w": 0.80, "h": 0.06,
                      "size": 9, "font": "serifBold", "color": "accent", "align": "center",
                      "caps": True, "track": 0.18},
@@ -160,7 +107,7 @@ def templates() -> list[dict]:
                     {"t": "qr", "x": 0.845, "y": 0.795, "w": 0.09, "h": 0.125, "invert": False},
                 ],
             },
-            "back": back_centered(),
+            "back": back_qr(dark=False),
         },
     })
 
@@ -178,9 +125,9 @@ def templates() -> list[dict]:
                     {"t": "rect", "x": 0.035, "y": 0.055, "w": 0.93, "h": 0.89, "stroke": "accent", "strokeW": 0.45},
                 ],
                 "elements": [
-                    {"t": "image", "role": "logo", "x": 0.07, "y": 0.095, "w": 0.22, "h": 0.15, "fit": "contain"},
-                    {"t": "text", "field": "company", "x": 0.50, "y": 0.105, "w": 0.425, "h": 0.05,
-                     "size": 8, "font": "sans", "color": "ink", "align": "right",
+                    {"t": "image", "role": "logo", "x": 0.775, "y": 0.10, "w": 0.135, "h": 0.105, "fit": "contain"},
+                    {"t": "text", "field": "company", "x": 0.07, "y": 0.105, "w": 0.60, "h": 0.05,
+                     "size": 8, "font": "sans", "color": "ink", "align": "left",
                      "caps": True, "track": 0.18},
                     {"t": "text", "field": "name", "x": 0.07, "y": 0.45, "w": 0.55, "h": 0.105,
                      "size": 12.5, "font": "serifBold", "color": "accent", "align": "left"},
@@ -197,7 +144,7 @@ def templates() -> list[dict]:
                     {"t": "qr", "x": 0.845, "y": 0.785, "w": 0.10, "h": 0.14, "invert": True},
                 ],
             },
-            "back": back_duo(dark=True),
+            "back": back_qr(dark=True),
         },
     })
 
@@ -216,10 +163,10 @@ def templates() -> list[dict]:
                     {"t": "rect", "x": 0, "y": 0, "w": 1, "h": 0.345, "fill": "band", "bleed": True},
                 ],
                 "elements": [
-                    {"t": "image", "role": "logo", "x": 0.06, "y": 0.07, "w": 0.16, "h": 0.195, "fit": "contain"},
-                    {"t": "text", "field": "company", "x": 0.255, "y": 0.10, "w": 0.60, "h": 0.075,
+                    {"t": "image", "role": "logo", "x": 0.79, "y": 0.075, "w": 0.15, "h": 0.195, "fit": "contain"},
+                    {"t": "text", "field": "company", "x": 0.06, "y": 0.10, "w": 0.65, "h": 0.075,
                      "size": 11, "font": "sansBold", "color": "onband", "align": "left"},
-                    {"t": "text", "field": "tagline", "x": 0.255, "y": 0.195, "w": 0.60, "h": 0.045,
+                    {"t": "text", "field": "tagline", "x": 0.062, "y": 0.195, "w": 0.65, "h": 0.045,
                      "size": 6.5, "font": "sans", "color": "onbandSub", "align": "left",
                      "caps": True, "track": 0.12},
                     {"t": "text", "field": "name", "x": 0.06, "y": 0.44, "w": 0.60, "h": 0.085,
@@ -237,7 +184,7 @@ def templates() -> list[dict]:
                     {"t": "qr", "x": 0.775, "y": 0.425, "w": 0.15, "h": 0.335, "invert": False},
                 ],
             },
-            "back": back_band(),
+            "back": back_qr(dark=False),
         },
     })
 
@@ -255,7 +202,7 @@ def templates() -> list[dict]:
                     {"t": "poly", "pts": [[0.60, 1.04], [1.04, 1.04], [1.04, 0.34]], "fill": "accent"},
                 ],
                 "elements": [
-                    {"t": "image", "role": "logo", "x": 0.07, "y": 0.10, "w": 0.16, "h": 0.14, "fit": "contain"},
+                    {"t": "image", "role": "logo", "x": 0.795, "y": 0.075, "w": 0.135, "h": 0.115, "fit": "contain"},
                     {"t": "rect", "x": 0.07, "y": 0.33, "w": 0.085, "h": 0.012, "fill": "accent"},
                     {"t": "text", "field": "name", "x": 0.07, "y": 0.365, "w": 0.55, "h": 0.09,
                      "size": 12, "font": "sansBold", "color": "ink", "align": "left"},
@@ -272,7 +219,7 @@ def templates() -> list[dict]:
                      "panel_color": "bg", "invert": False},
                 ],
             },
-            "back": back_cut(),
+            "back": back_qr(dark=False),
         },
     })
 
@@ -290,7 +237,7 @@ def templates() -> list[dict]:
                     {"t": "rect", "x": 0.04, "y": 0.055, "w": 0.92, "h": 0.89, "stroke": "line", "strokeW": 0.5},
                 ],
                 "elements": [
-                    {"t": "image", "role": "logo", "x": 0.42, "y": 0.085, "w": 0.16, "h": 0.13, "fit": "contain"},
+                    {"t": "image", "role": "logo", "x": 0.775, "y": 0.085, "w": 0.135, "h": 0.105, "fit": "contain"},
                     {"t": "text", "field": "company", "x": 0.10, "y": 0.24, "w": 0.80, "h": 0.055,
                      "size": 8.5, "font": "serifBold", "color": "accent", "align": "center",
                      "caps": True, "track": 0.22},
@@ -307,7 +254,7 @@ def templates() -> list[dict]:
                     {"t": "qr", "x": 0.855, "y": 0.80, "w": 0.09, "h": 0.12, "invert": False},
                 ],
             },
-            "back": back_centered(),
+            "back": back_qr(dark=False),
         },
     })
 
@@ -344,7 +291,7 @@ def templates() -> list[dict]:
                     {"t": "qr", "x": 0.84, "y": 0.78, "w": 0.105, "h": 0.145, "panel": True, "invert": False},
                 ],
             },
-            "back": back_duo(dark=True),
+            "back": back_qr(dark=True),
         },
     })
 
@@ -354,7 +301,8 @@ def templates() -> list[dict]:
         "desc": "Solid brand panel on the left, contact block on the right",
         "v": TEMPLATE_VERSION,
         "palette": {"bg": "#FFFFFF", "panel": "#14532D", "ink": "#1F2937", "sub": "#6B7280",
-                    "accent": "#14532D", "line": "#14532D", "onpanel": "#FFFFFF"},
+                    "accent": "#14532D", "line": "#14532D", "onpanel": "#FFFFFF",
+                    "onpanelSub": "#A7C4B5"},
         "sides": {
             "front": {
                 "background": [
@@ -362,7 +310,7 @@ def templates() -> list[dict]:
                     {"t": "rect", "x": 0, "y": 0, "w": 0.375, "h": 1, "fill": "panel", "bleed": True},
                 ],
                 "elements": [
-                    {"t": "image", "role": "logo", "x": 0.11, "y": 0.30, "w": 0.155, "h": 0.27, "fit": "contain"},
+                    {"t": "image", "role": "logo", "x": 0.775, "y": 0.085, "w": 0.15, "h": 0.12, "fit": "contain"},
                     {"t": "text", "field": "company", "x": 0.055, "y": 0.635, "w": 0.265, "h": 0.05,
                      "size": 7.5, "font": "sansBold", "color": "onpanel", "align": "center",
                      "caps": True, "track": 0.14},
@@ -381,7 +329,7 @@ def templates() -> list[dict]:
                     {"t": "qr", "x": 0.855, "y": 0.80, "w": 0.10, "h": 0.13, "invert": False},
                 ],
             },
-            "back": back_duo(dark=True, bg_key="panel"),
+            "back": back_qr(dark=True, bg_key="panel", line_key="onpanel"),
         },
     })
 
@@ -396,9 +344,9 @@ def templates() -> list[dict]:
             "front": {
                 "background": [{"t": "rect", "x": 0, "y": 0, "w": 1, "h": 1, "fill": "bg", "bleed": True}],
                 "elements": [
-                    {"t": "image", "role": "logo", "x": 0.08, "y": 0.095, "w": 0.115, "h": 0.10, "fit": "contain"},
-                    {"t": "text", "field": "company", "x": 0.60, "y": 0.10, "w": 0.32, "h": 0.05,
-                     "size": 7.5, "font": "sans", "color": "ink", "align": "right",
+                    {"t": "image", "role": "logo", "x": 0.80, "y": 0.075, "w": 0.12, "h": 0.10, "fit": "contain"},
+                    {"t": "text", "field": "company", "x": 0.08, "y": 0.10, "w": 0.60, "h": 0.05,
+                     "size": 7.5, "font": "sans", "color": "ink", "align": "left",
                      "caps": True, "track": 0.20},
                     {"t": "text", "field": "name", "x": 0.08, "y": 0.375, "w": 0.62, "h": 0.085,
                      "size": 11, "font": "sansBold", "color": "ink", "align": "left"},
@@ -414,7 +362,7 @@ def templates() -> list[dict]:
                     {"t": "qr", "x": 0.865, "y": 0.80, "w": 0.085, "h": 0.115, "invert": False},
                 ],
             },
-            "back": back_centered(),
+            "back": back_qr(dark=False),
         },
     })
 
@@ -455,7 +403,7 @@ def templates() -> list[dict]:
                     {"t": "qr", "x": 0.07, "y": 0.835, "w": 0.085, "h": 0.11, "invert": False},
                 ],
             },
-            "back": back_duo(dark=False),
+            "back": back_qr(dark=False),
         },
     })
 
@@ -465,7 +413,7 @@ def templates() -> list[dict]:
 def _fix_rect_qr_panel(tpl: dict) -> None:
     """Convert marker 'rect_qr_panel' into a real rect element placed before the qr."""
     for side in tpl["sides"].values():
-        els = side["elements"]
+        els = side.get("elements") or []
         for i, el in enumerate(els):
             if el.get("t") == "rect_qr_panel":
                 els[i] = {
@@ -489,13 +437,17 @@ def build_all(force: bool = False) -> None:
         if need:
             jpath.write_text(json.dumps(tpl, indent=2, ensure_ascii=False), encoding="utf-8")
         thumb = tdir / "preview.png"
-        # rebuild when missing or when the default logo file changed
-        stale = not thumb.exists() or (
+        # rebuild when missing, when template.json was just rewritten,
+        # or when the default logo file changed
+        stale = not thumb.exists() or thumb.stat().st_mtime < jpath.stat().st_mtime or (
             DEFAULT_LOGO.is_file() and DEFAULT_LOGO.stat().st_mtime > thumb.stat().st_mtime
         )
         if stale:
             logo = DEFAULT_LOGO if DEFAULT_LOGO.is_file() else None
-            img = render_stacked(tpl, SAMPLE_DATA, {"logo": logo, "photo": None}, None, 150)
+            qr_img = qrsvc.build({"type": "vcard", "value": "", "logo_in_qr": False},
+                                 SAMPLE_DATA, None,
+                                 invert=qr_invert(tpl), logo_in_qr=False)
+            img = render_stacked(tpl, SAMPLE_DATA, {"logo": logo, "photo": None}, qr_img, 150)
             img.thumbnail((520, 4000), Image.LANCZOS)
             img.save(thumb)
 

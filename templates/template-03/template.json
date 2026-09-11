@@ -2,7 +2,7 @@
   "id": "template-03",
   "name": "Midnight Lux",
   "desc": "Charcoal black, gold serif name, right-aligned company",
-  "v": 3,
+  "v": 5,
   "palette": {
     "bg": "#101318",
     "ink": "#F2F3F5",
@@ -37,23 +37,23 @@
         {
           "t": "image",
           "role": "logo",
-          "x": 0.07,
-          "y": 0.095,
-          "w": 0.22,
-          "h": 0.15,
+          "x": 0.775,
+          "y": 0.1,
+          "w": 0.135,
+          "h": 0.105,
           "fit": "contain"
         },
         {
           "t": "text",
           "field": "company",
-          "x": 0.5,
+          "x": 0.07,
           "y": 0.105,
-          "w": 0.425,
+          "w": 0.6,
           "h": 0.05,
           "size": 8,
           "font": "sans",
           "color": "ink",
-          "align": "right",
+          "align": "left",
           "caps": true,
           "track": 0.18
         },
@@ -153,39 +153,9 @@
           "bleed": true
         }
       ],
-      "elements": [
-        {
-          "t": "image",
-          "role": "logo",
-          "x": 0.13,
-          "y": 0.27,
-          "w": 0.26,
-          "h": 0.46,
-          "fit": "contain",
-          "fallback_text": true,
-          "fb_size": 11,
-          "fb_font": "sansBold",
-          "fb_color": "ink",
-          "fb_track": 0.06
-        },
-        {
-          "t": "line",
-          "x1": 0.475,
-          "y1": 0.22,
-          "x2": 0.475,
-          "y2": 0.78,
-          "stroke": "line",
-          "w": 1.2
-        },
-        {
-          "t": "qr",
-          "x": 0.565,
-          "y": 0.26,
-          "w": 0.3,
-          "h": 0.48,
-          "invert": true
-        }
-      ]
+      "dynamic": "qr_back",
+      "invert": true,
+      "line_key": "line"
     }
   }
 }

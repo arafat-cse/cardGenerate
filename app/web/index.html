@@ -77,6 +77,21 @@
           </div>
         </div>
       </div>
+      <div class="row2" style="margin-top:12px">
+        <div class="upbox">
+          <span class="up-title">QR image (optional — your own QR, placed on the back)</span>
+          <div class="dropzone" data-kind="qr"><input type="file" accept="image/*" hidden>
+            <span class="dz-hint">Click or drop image</span>
+          </div>
+          <div class="thumbrow hidden">
+            <img alt="qr">
+            <div class="thumb-btns">
+              <button type="button" class="mini danger" data-clear="qr">Clear</button>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
     </section>
 
     <section>
@@ -93,7 +108,7 @@
         </label>
         <label id="qrValueWrap" class="hidden">Value<input id="qrValue" placeholder="acme.com / mail / phone"></label>
       </div>
-      <label class="check"><input type="checkbox" id="qrLogo" checked> Put the logo inside the QR (like sample card)</label>
+      <label class="check"><input type="checkbox" id="qrLogo"> Put the logo inside a generated QR (ignored when you upload a QR image)</label>
     </section>
 
     <div class="actions">
@@ -101,7 +116,7 @@
       <button id="btnGenerate" type="button">Generate PNG + PDF</button>
       <button id="btnAI" type="button">Send to Illustrator (.ai)</button>
     </div>
-    <p class="hint">Card: 3.5 × 2 in + 0.125 in bleed · PNG 300 DPI · PDF has 2 pages (front/back) · Illustrator creates a 2-artboard .ai</p>
+    <p class="hint">Card: 86 × 54 mm + 0.125 in bleed · Logo shows only on the front (right side) · QR sits on the back · PNG 300 DPI · PDF has 2 pages (front/back)</p>
   </aside>
 
   <section class="stage">

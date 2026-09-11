@@ -12,8 +12,11 @@ const state = {
   templateId: localStorage.getItem("bizcard_tpl") || "template-01",
   logo: null,
   photo: null,
+  qr_image: null,
   generating: false,
 };
+
+const UPLOAD_FIELD = { logos: "logo", photos: "photo", qr: "qr_image" };
 
 const FIELDS = ["company", "name", "title", "tagline", "phone", "email", "website", "address"];
 const DEFAULTS = {
@@ -63,6 +66,7 @@ function payload() {
     data: collectData(),
     logo: state.logo,
     photo: state.photo,
+    qr_image: state.qr_image,
     qr: {
       type: $("#qrType").value,
       value: $("#qrValue").value.trim(),
@@ -92,7 +96,7 @@ async function updatePreview() {
     const res = await postJSON("/api/preview", payload());
     $("#preview").src = res.url;
     $("#previewInfo").textContent =
-      "Front (top) and back (bottom) · 3.5 × 2 in + bleed · this preview is exactly what gets printed";
+      "Front (top) and back (bottom) · 86 × 54 mm + bleed · this preview is exactly what gets printed";
   } catch (e) {
     toast(e.message, true);
   }
@@ -138,7 +142,7 @@ function setUpUpload(kind) {
       fd.append("cid", state.cid);
       fd.append("file", file);
       const res = await api(`/api/upload/${kind}`, { method: "POST", body: fd });
-      state[kind === "logos" ? "logo" : "photo"] = res.path;
+      state[UPLOAD_FIELD[kind]] = res.path;
       img.src = res.url + "?v=" + Date.now();
       row.classList.remove("hidden");
       dz.classList.add("hidden");
@@ -160,8 +164,9 @@ function setUpUpload(kind) {
     handle(e.dataTransfer.files[0]);
   });
 
-  box.querySelector("[data-bg]").addEventListener("click", async () => {
-    const path = state[kind === "logos" ? "logo" : "photo"];
+  const bgBtn = box.querySelector("[data-bg]");
+  if (bgBtn) bgBtn.addEventListener("click", async () => {
+    const path = state[UPLOAD_FIELD[kind]];
     if (!path) return;
     busy(true, "Removing background — first run downloads an AI model (~170 MB), please wait…");
     try {
@@ -170,7 +175,7 @@ function setUpUpload(kind) {
       fd.append("kind", kind);
       fd.append("path", path);
       const res = await api("/api/bg-remove", { method: "POST", body: fd });
-      state[kind === "logos" ? "logo" : "photo"] = res.path;
+      state[UPLOAD_FIELD[kind]] = res.path;
       img.src = res.url + "?v=" + Date.now();
       updatePreview();
       toast("Background removed.");
@@ -182,7 +187,7 @@ function setUpUpload(kind) {
   });
 
   box.querySelector("[data-clear]").addEventListener("click", () => {
-    state[kind === "logos" ? "logo" : "photo"] = null;
+    state[UPLOAD_FIELD[kind]] = null;
     row.classList.add("hidden");
     dz.classList.remove("hidden");
     input.value = "";
@@ -278,6 +283,7 @@ async function init() {
   restoreForm();
   setUpUpload("logos");
   setUpUpload("photos");
+  setUpUpload("qr");
 
   $("#qrType").addEventListener("change", () => {
     const t = $("#qrType").value;

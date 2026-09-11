@@ -2,7 +2,7 @@
   "id": "template-08",
   "name": "Split Brand",
   "desc": "Solid brand panel on the left, contact block on the right",
-  "v": 3,
+  "v": 5,
   "palette": {
     "bg": "#FFFFFF",
     "panel": "#14532D",
@@ -10,7 +10,8 @@
     "sub": "#6B7280",
     "accent": "#14532D",
     "line": "#14532D",
-    "onpanel": "#FFFFFF"
+    "onpanel": "#FFFFFF",
+    "onpanelSub": "#A7C4B5"
   },
   "sides": {
     "front": {
@@ -38,10 +39,10 @@
         {
           "t": "image",
           "role": "logo",
-          "x": 0.11,
-          "y": 0.3,
-          "w": 0.155,
-          "h": 0.27,
+          "x": 0.775,
+          "y": 0.085,
+          "w": 0.15,
+          "h": 0.12,
           "fit": "contain"
         },
         {
@@ -154,39 +155,9 @@
           "bleed": true
         }
       ],
-      "elements": [
-        {
-          "t": "image",
-          "role": "logo",
-          "x": 0.13,
-          "y": 0.27,
-          "w": 0.26,
-          "h": 0.46,
-          "fit": "contain",
-          "fallback_text": true,
-          "fb_size": 11,
-          "fb_font": "sansBold",
-          "fb_color": "ink",
-          "fb_track": 0.06
-        },
-        {
-          "t": "line",
-          "x1": 0.475,
-          "y1": 0.22,
-          "x2": 0.475,
-          "y2": 0.78,
-          "stroke": "line",
-          "w": 1.2
-        },
-        {
-          "t": "qr",
-          "x": 0.565,
-          "y": 0.26,
-          "w": 0.3,
-          "h": 0.48,
-          "invert": true
-        }
-      ]
+      "dynamic": "qr_back",
+      "invert": true,
+      "line_key": "onpanel"
     }
   }
 }

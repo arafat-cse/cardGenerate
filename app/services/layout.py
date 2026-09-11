@@ -111,7 +111,27 @@ def _photo_fallback_items(el: dict, pal: dict, has_logo: bool, data: dict) -> li
     return items
 
 
+def _qr_back_side(side: dict, has: dict) -> dict:
+    """Dynamic back: QR+photo -> two halves; photo only -> centered photo;
+    QR only -> centered QR. Replaces the side's elements before layout."""
+    dark = bool(side.get("invert"))
+    line = side.get("line_key", "line")
+    if has.get("photo") and has.get("qr"):
+        els = [
+            {"t": "image", "role": "photo", "x": 0.055, "y": 0.16, "w": 0.36, "h": 0.68, "fit": "cover"},
+            {"t": "line", "x1": 0.5, "y1": 0.14, "x2": 0.5, "y2": 0.86, "stroke": line, "w": 1.2},
+            {"t": "qr", "x": 0.575, "y": 0.255, "w": 0.26, "h": 0.415, "invert": dark},
+        ]
+    elif has.get("photo"):
+        els = [{"t": "image", "role": "photo", "x": 0.345, "y": 0.16, "w": 0.31, "h": 0.68, "fit": "cover"}]
+    else:
+        els = [{"t": "qr", "x": 0.37, "y": 0.29, "w": 0.26, "h": 0.415, "invert": dark}]
+    return {**side, "elements": els}
+
+
 def resolve_side(tpl: dict, side: dict, data: dict, has: dict) -> list[dict]:
+    if side.get("dynamic") == "qr_back":
+        side = _qr_back_side(side, has)
     pal = tpl["palette"]
     items: list[dict] = []
 
@@ -225,6 +245,10 @@ def resolve_side(tpl: dict, side: dict, data: dict, has: dict) -> list[dict]:
 
 def qr_invert(tpl: dict) -> bool:
     for side in tpl["sides"].values():
+        if side.get("dynamic") == "qr_back":
+            if side.get("invert"):
+                return True
+            continue
         for el in side.get("elements", []):
             if el.get("t") == "qr" and el.get("invert"):
                 return True

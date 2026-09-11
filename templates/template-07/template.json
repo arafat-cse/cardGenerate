@@ -2,7 +2,7 @@
   "id": "template-07",
   "name": "Azure Bold",
   "desc": "Deep blue with a cyan edge stripe",
-  "v": 3,
+  "v": 5,
   "palette": {
     "bg": "#0A3D91",
     "ink": "#FFFFFF",
@@ -154,39 +154,9 @@
           "bleed": true
         }
       ],
-      "elements": [
-        {
-          "t": "image",
-          "role": "logo",
-          "x": 0.13,
-          "y": 0.27,
-          "w": 0.26,
-          "h": 0.46,
-          "fit": "contain",
-          "fallback_text": true,
-          "fb_size": 11,
-          "fb_font": "sansBold",
-          "fb_color": "ink",
-          "fb_track": 0.06
-        },
-        {
-          "t": "line",
-          "x1": 0.475,
-          "y1": 0.22,
-          "x2": 0.475,
-          "y2": 0.78,
-          "stroke": "line",
-          "w": 1.2
-        },
-        {
-          "t": "qr",
-          "x": 0.565,
-          "y": 0.26,
-          "w": 0.3,
-          "h": 0.48,
-          "invert": true
-        }
-      ]
+      "dynamic": "qr_back",
+      "invert": true,
+      "line_key": "line"
     }
   }
 }

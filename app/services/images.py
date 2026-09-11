@@ -4,7 +4,7 @@ from pathlib import Path
 
 from PIL import Image, ImageOps
 
-MAX_DIM = {"logos": 1400, "photos": 1600}
+MAX_DIM = {"logos": 1400, "photos": 1600, "qr": 1600}
 
 
 def trim_alpha(img: Image.Image) -> Image.Image:
@@ -21,7 +21,7 @@ def _safe_ext(name: str) -> str:
 
 def process_upload(kind: str, cid: str, filename: str, raw: bytes) -> dict:
     """Save the original, then a cleaned/resized working PNG. Returns URLs."""
-    from ..config import LOGOS_DIR, ORIGINALS_DIR, PHOTOS_DIR, UPLOADS_DIR
+    from ..config import LOGOS_DIR, ORIGINALS_DIR, PHOTOS_DIR, QR_DIR
 
     stamp = time.strftime("%Y%m%d-%H%M%S")
     stem = "".join(c for c in Path(filename).stem if c.isalnum() or c in "-_")[:40] or "image"
@@ -41,7 +41,7 @@ def process_upload(kind: str, cid: str, filename: str, raw: bytes) -> dict:
     if max(img.size) > max_dim:
         img.thumbnail((max_dim, max_dim), Image.LANCZOS)
 
-    out_dir = LOGOS_DIR / cid if kind == "logos" else PHOTOS_DIR / cid
+    out_dir = {"logos": LOGOS_DIR, "photos": PHOTOS_DIR, "qr": QR_DIR}[kind] / cid
     out_dir.mkdir(parents=True, exist_ok=True)
     out_name = f"{stamp}_{stem}.png"
     out_path = out_dir / out_name

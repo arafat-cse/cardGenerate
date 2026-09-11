@@ -2,7 +2,7 @@
   "id": "template-06",
   "name": "Heritage Cream",
   "desc": "Cream paper, bronze rules, serif + italic",
-  "v": 3,
+  "v": 5,
   "palette": {
     "bg": "#F6F0E4",
     "ink": "#43392B",
@@ -37,10 +37,10 @@
         {
           "t": "image",
           "role": "logo",
-          "x": 0.42,
+          "x": 0.775,
           "y": 0.085,
-          "w": 0.16,
-          "h": 0.13,
+          "w": 0.135,
+          "h": 0.105,
           "fit": "contain"
         },
         {
@@ -144,72 +144,9 @@
           "bleed": true
         }
       ],
-      "elements": [
-        {
-          "t": "image",
-          "role": "logo",
-          "x": 0.375,
-          "y": 0.2,
-          "w": 0.25,
-          "h": 0.22,
-          "fit": "contain"
-        },
-        {
-          "t": "line",
-          "x1": 0.42,
-          "y1": 0.47,
-          "x2": 0.58,
-          "y2": 0.47,
-          "stroke": "line",
-          "w": 0.6
-        },
-        {
-          "t": "text",
-          "field": "company",
-          "x": 0.1,
-          "y": 0.5,
-          "w": 0.8,
-          "h": 0.06,
-          "size": 8.5,
-          "font": "serifBold",
-          "color": "ink",
-          "align": "center",
-          "caps": true,
-          "track": 0.2
-        },
-        {
-          "t": "text",
-          "field": "tagline",
-          "x": 0.1,
-          "y": 0.575,
-          "w": 0.8,
-          "h": 0.05,
-          "size": 7,
-          "font": "serifItal",
-          "color": "sub",
-          "align": "center"
-        },
-        {
-          "t": "qr",
-          "x": 0.43,
-          "y": 0.66,
-          "w": 0.14,
-          "h": 0.24,
-          "invert": false
-        },
-        {
-          "t": "text",
-          "field": "website",
-          "x": 0.1,
-          "y": 0.92,
-          "w": 0.8,
-          "h": 0.045,
-          "size": 6.5,
-          "font": "sans",
-          "color": "sub",
-          "align": "center"
-        }
-      ]
+      "dynamic": "qr_back",
+      "invert": false,
+      "line_key": "line"
     }
   }
 }

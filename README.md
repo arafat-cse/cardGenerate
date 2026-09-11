@@ -47,8 +47,9 @@ automation — never touches the internet.
 2. Fill in **card details** and **contact** fields (empty fields are simply skipped).
 3. Upload a **logo** (and a photo for the *Portrait Focus* template).
    Click **Remove background** if the logo isn't transparent yet.
+   The logo is placed **once, on the front's right side** — never repeated on the back.
 4. Choose what the **QR code** contains — `vCard` packs the whole contact card
-   into the QR. Tick *"Put the logo inside the QR"* to match the noir sample style.
+   into the QR — **or upload your own QR image**; it is placed on the back as-is.
 5. The **preview** (front on top, back below) updates as you type — it is rendered by
    the same engine that produces the final files, so what you see is what prints.
 6. Click **Generate PNG + PDF**. Files land in:
@@ -60,13 +61,18 @@ automation — never touches the internet.
 ### Folders
 
 ```
-uploads/      your logos / photos / originals (never leaves the PC)
+uploads/      your logos / photos / QR images / originals (never leaves the PC)
 generated/    png | pdf | preview | ai outputs
 templates/    template-01 … template-10 (template.json is plain editable JSON)
 illustrator/  scripts/  the ExtendScript + job hand-off
               jobs/      per-render config, assets and card.ai
+assets/       your standing designs, used automatically for every card:
+              default_logo.png (logo shown when none is uploaded) and
+              qr.png (QR placed on the back when none is uploaded)
 fonts/        (optional) drop any .ttf here to use it in templates
 ```
+
+Card size is **86 × 54 mm** with 0.125 in bleed on every export.
 
 ## Adobe Illustrator notes
 
