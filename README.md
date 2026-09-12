@@ -9,6 +9,8 @@ Design a two-sided card (front + back) in the browser, then export:
 - **PDF** (2 pages with 0.125 in bleed)
 - **.ai** (Adobe Illustrator builds the card natively via a script — 2 artboards)
 - **Mockup** — realistic 3D card mockups for customer presentation (see below)
+- **Image Remove & Prepare** — cut backgrounds out of logos/photos, enhance,
+  resize and hand them straight to the card (see below)
 
 It also does local AI background removal, local QR codes (vCard / link / email / phone,
 with your logo embedded like on the sample noir card), and 10 two-sided templates.
@@ -83,10 +85,43 @@ highlight, on a professional background.
 The mockup is rendered by the same local engine as everything else — no internet,
 no external images.
 
+### Image Remove & Prepare page
+
+Open **Image Remove** in the top navbar (or `/prep.html`). A local workshop for
+the images that go **onto** the card:
+
+- Drop a JPG / PNG / WEBP and click **Remove Background** — the local
+  **rembg** AI model (u2net) cuts the subject out and you get a real
+  transparent PNG. Nothing is uploaded anywhere.
+- Original and result are shown side by side on a checkerboard, with a
+  **before/after slider**, zoom (− / + / Fit / Actual) and a **Refine edges**
+  brush editor (Erase leftovers / Restore lost details like thin text or
+  holes, with Undo/Redo).
+- **Quality**: Original / 2× / 4× Enhance — a stepped smart upscale with
+  sharpening. Honest by design: it improves apparent sharpness but **cannot
+  recover detail the original never had** (the page tells you the same).
+- **Output size** in px / mm / cm / inch with DPI (default 300) — pixels are
+  calculated for you, aspect ratio can be locked.
+- **Auto quality check**: compares your source with the requested print size
+  and answers Good / Fair / Low / Very low with a recommendation.
+- **Transform**: rotation slider, flip H/V, auto-trim of transparent edges.
+- **Presets**: Card Logo · Card Photo · Social Media · Custom.
+- **Export**: PNG (primary, keeps transparency) and SVG. The SVG is honest —
+  *Vectorize* mode traces real vector paths locally (vtracer); the Preserve /
+  Optimize modes embed the raster PNG inside an SVG and are clearly labeled
+  "Raster image — SVG wrapper", never a renamed PNG.
+- **[ Use in Card Generator ]** hands the finished image straight to the
+  generator as your logo or photo — no download/re-upload. **[ Preview in
+  Mockup ]** sends it to the Mockup page.
+- Files are saved with clean names (`my_logo_removed.png`,
+  `my_logo_enhanced.png`) and never overwrite your originals. Prep sessions
+  older than 7 days are cleaned up automatically.
+
 ### Folders
 
 ```
-uploads/      your logos / photos / QR images / mockup images (never leaves the PC)
+uploads/      your logos / photos / QR images / mockup images / prep sessions
+              (never leave the PC)
 generated/    png | pdf | preview | ai | mockups outputs
 templates/    template-01 … template-10 (template.json is plain editable JSON)
 mockups/      backgrounds/ — drop your own photo backdrops here (used by the Mockup page)
@@ -123,6 +158,7 @@ Card size is **86 × 54 mm** with 0.125 in bleed on every export.
 | `start.bat` says Python not found | Reinstall Python and tick "Add python.exe to PATH" |
 | Port 8000 already in use | Close the other program, or change `port=8000` at the bottom of `main.py` |
 | Remove background fails | Run `setup.bat` again; check internet for the one-time model download |
+| SVG "Vectorize" says wrapper | The optional `vtracer` package is missing — run `.venv\Scripts\pip install vtracer` |
 | Illustrator file never appears | Illustrator may show a first-run/license dialog — complete it once, then press "Send to Illustrator" again |
 | Bangla/other scripts in card text | Latin fonts are used by default; complex scripts are best handled in the .ai step in Illustrator |
 

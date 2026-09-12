@@ -281,6 +281,29 @@ async function sendToIllustrator() {
   }
 }
 
+// ------------------------------------------- image handed over from /prep
+
+function takePreparedImage() {
+  const raw = sessionStorage.getItem("bizcard_handoff");
+  if (!raw) return;
+  sessionStorage.removeItem("bizcard_handoff");
+  try {
+    const h = JSON.parse(raw);
+    if (h.kind !== "logo" && h.kind !== "photo") return;
+    state[h.kind] = h.path;
+    const kindKey = h.kind === "logo" ? "logos" : "photos";
+    const dz = document.querySelector(`.dropzone[data-kind="${kindKey}"]`);
+    if (dz) {
+      const row = dz.closest(".upbox").querySelector(".thumbrow");
+      row.querySelector("img").src = h.url + "?v=" + Date.now();
+      row.classList.remove("hidden");
+      dz.classList.add("hidden");
+    }
+    schedulePreview(800);
+    setTimeout(() => toast(`Prepared image from Image Remove is now your ${h.kind}.`), 300);
+  } catch { /* malformed handoff — ignore */ }
+}
+
 // ---------------------------------------------------------------- init
 
 function restoreForm() {
@@ -303,6 +326,7 @@ async function init() {
   setUpUpload("logos");
   setUpUpload("photos");
   setUpUpload("qr");
+  takePreparedImage();
 
   $("#qrType").addEventListener("change", () => {
     const t = $("#qrType").value;

@@ -16,9 +16,10 @@ from .config import (
     UPLOADS_DIR, ensure_dirs, resolve_user_path,
 )
 from .fonts import resolve as resolve_font
-from .services import ai_illust, mockupsvc, pdfsvc, qrsvc, render
+from .services import ai_illust, mockupsvc, pdfsvc, prepsvc, qrsvc, render
 from .services.bgremove import BgRemovalUnavailable, remove_background
 from .services.images import process_upload
+from .services.prepsvc import PrepError
 from .services.layout import qr_invert
 
 app = FastAPI(title="BizCard Studio", version="1.0")
@@ -28,6 +29,7 @@ app = FastAPI(title="BizCard Studio", version="1.0")
 def _startup():
     ensure_dirs()
     templates_def.build_all()
+    prepsvc.cleanup_old()
 
 
 class CardData(BaseModel):
@@ -268,7 +270,7 @@ def _mockup_src(rel: Optional[str]):
     or project-relative paths for mockup source images."""
     if not rel:
         return None
-    rel2 = rel.replace("\\", "/").lstrip("/")
+    rel2 = rel.replace("\\", "/").lstrip("/").split("?", 1)[0]
     prefix_map = {
         "uploads/": UPLOADS_DIR,
         "generated/": GENERATED_DIR,
@@ -354,6 +356,82 @@ def mockup_render(req: MockupReq):
         with Image.open(out) as im:
             w, h = im.size
     return {"url": f"/generated/mockups/{out.name}", "width": w, "height": h}
+
+
+# ------------------------------------------------------------------ image prep
+
+class PrepProcessReq(BaseModel):
+    cid: str
+    bg_mode: str = "keep"          # auto | keep
+    enhance: int = 1               # 1 | 2 | 4
+    rotate: float = 0.0
+    flip_h: bool = False
+    flip_v: bool = False
+    trim: bool = False
+    width: Optional[float] = None
+    height: Optional[float] = None
+    unit: str = "px"               # px | mm | cm | in
+    dpi: int = 300
+    keep_aspect: bool = True
+
+
+class PrepSvgReq(BaseModel):
+    cid: str
+    mode: str = "preserve"         # preserve | optimize | vectorize
+    detail: int = 6                # 1..10
+    smoothing: bool = True
+    colors: int = 6                # color precision 2..10
+
+
+class PrepUseReq(BaseModel):
+    cid: str
+    kind: str                      # logo | photo
+
+
+@app.post("/api/prep/upload")
+async def prep_upload(cid: str = Form(...), file: UploadFile = File(...)):
+    raw = await file.read()
+    try:
+        return prepsvc.new_session(cid, file.filename or "image.png", raw)
+    except PrepError as e:
+        raise HTTPException(400, str(e))
+
+
+@app.post("/api/prep/process")
+def prep_process(req: PrepProcessReq):
+    try:
+        return prepsvc.process(prepsvc.session_dir(req.cid), req.model_dump())
+    except PrepError as e:
+        raise HTTPException(400, str(e))
+    except Exception as e:
+        raise HTTPException(500, f"Processing failed: {e}")
+
+
+@app.post("/api/prep/refine")
+def prep_refine(cid: str = Form(...), image: str = Form(...)):
+    try:
+        return prepsvc.refine(prepsvc.session_dir(cid), image)
+    except PrepError as e:
+        raise HTTPException(400, str(e))
+
+
+@app.post("/api/prep/svg")
+def prep_svg(req: PrepSvgReq):
+    try:
+        out = prepsvc.build_svg(prepsvc.session_dir(req.cid), req.mode,
+                                req.detail, req.smoothing, req.colors)
+        out["size_kb"] = round(len(out["svg"].encode("utf-8")) / 1024, 1)
+        return out
+    except PrepError as e:
+        raise HTTPException(400, str(e))
+
+
+@app.post("/api/prep/use")
+def prep_use(req: PrepUseReq):
+    try:
+        return prepsvc.use_in_generator(req.cid, req.kind)
+    except PrepError as e:
+        raise HTTPException(400, str(e))
 
 
 # ------------------------------------------------------------------ static

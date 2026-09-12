@@ -9,3 +9,7 @@ reportlab>=4.2
 # start.bat installs this automatically. If it fails on your machine, the rest
 # of the app still works - only the "Remove Background" button is disabled.
 # rembg[cpu]>=2.0.57
+
+# Optional: true raster-to-vector tracing for the Image Remove page.
+# When missing, the page falls back to an honestly-labeled SVG wrapper.
+vtracer>=0.6
