@@ -99,11 +99,23 @@
         <label id="customWrap" class="hidden">Custom color
           <input type="color" id="customColor" value="#f2f3f5">
         </label>
-        <label id="imageWrap" class="hidden">Background image
-          <select id="bgImageSel"><option value="">— none —</option></select>
-        </label>
+        <div id="imageWrap" class="hidden upbox">
+          <span class="up-title">Background image <em id="stBg" class="mk-state">no file</em></span>
+          <label>Preset
+            <select id="bgImageSel"><option value="">— none —</option></select>
+          </label>
+          <div class="dropzone" data-side="bg"><input type="file" accept="image/*" hidden>
+            <span class="dz-hint">Or click / drop your own photo</span>
+          </div>
+          <div class="thumbrow hidden">
+            <img alt="background">
+            <div class="thumb-btns">
+              <button type="button" class="mini danger" data-clear="bg">Clear</button>
+            </div>
+          </div>
+        </div>
       </div>
-      <p class="hint">Want your own photo backdrop? Drop images into <b>mockups/backgrounds/</b> and they appear here.</p>
+      <p class="hint">Upload your own backdrop above, or drop images into <b>mockups/backgrounds/</b> to add reusable presets.</p>
     </section>
 
     <section id="layoutSec">

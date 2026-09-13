@@ -289,8 +289,8 @@ def _mockup_src(rel: Optional[str]):
 
 @app.post("/api/mockup/upload/{side}")
 async def mockup_upload(side: str, cid: str = Form(...), file: UploadFile = File(...)):
-    if side not in ("front", "back"):
-        raise HTTPException(400, "side must be front or back")
+    if side not in ("front", "back", "bg"):
+        raise HTTPException(400, "side must be front, back or bg")
     raw = await file.read()
     if not raw:
         raise HTTPException(400, "Empty file")
@@ -302,8 +302,9 @@ async def mockup_upload(side: str, cid: str = Form(...), file: UploadFile = File
         img = ImageOps.exif_transpose(img).convert("RGBA")
     except Exception as e:
         raise HTTPException(400, f"Could not read image: {e}")
-    if max(img.size) > 2400:
-        img.thumbnail((2400, 2400), Image.LANCZOS)
+    cap = 3200 if side == "bg" else 2400
+    if max(img.size) > cap:
+        img.thumbnail((cap, cap), Image.LANCZOS)
 
     safe_cid = re.sub(r"[^a-zA-Z0-9_-]", "", cid)[:40] or "cid"
     out_dir = UPLOADS_DIR / "mockup" / safe_cid

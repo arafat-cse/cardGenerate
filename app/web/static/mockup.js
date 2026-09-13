@@ -148,6 +148,63 @@ function setUpSide(side) {
   });
 }
 
+function setUpBg() {
+  const dz = $('.dropzone[data-side="bg"]');
+  const input = dz.querySelector("input");
+  const box = dz.closest(".upbox");
+  const row = box.querySelector(".thumbrow");
+  const img = row.querySelector("img");
+  const st = $("#stBg");
+
+  const apply = (path, url) => {
+    state.bg_image = path;
+    img.src = url + "?v=" + Date.now();
+    row.classList.remove("hidden");
+    dz.classList.add("hidden");
+    st.textContent = "loaded";
+    st.classList.add("on");
+    state.bg = "image";
+    $$("input[name=mkbg]").forEach((r) => { r.checked = r.value === "image"; });
+    $("#customWrap").classList.add("hidden");
+    $("#imageWrap").classList.remove("hidden");
+    scheduleRender(60);
+  };
+
+  const handle = async (file) => {
+    if (!file) return;
+    try {
+      const fd = new FormData();
+      fd.append("cid", state.cid);
+      fd.append("file", file);
+      const res = await api("/api/mockup/upload/bg", { method: "POST", body: fd });
+      apply(res.path, res.url);
+    } catch (e) {
+      toast(e.message, true);
+    }
+  };
+
+  dz.addEventListener("click", () => input.click());
+  input.addEventListener("change", () => handle(input.files[0]));
+  dz.addEventListener("dragover", (e) => { e.preventDefault(); dz.classList.add("drag"); });
+  dz.addEventListener("dragleave", () => dz.classList.remove("drag"));
+  dz.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dz.classList.remove("drag");
+    handle(e.dataTransfer.files[0]);
+  });
+
+  box.querySelector("[data-clear]").addEventListener("click", () => {
+    state.bg_image = "";
+    row.classList.add("hidden");
+    dz.classList.remove("hidden");
+    input.value = "";
+    st.textContent = "no file";
+    st.classList.remove("on");
+    $("#bgImageSel").value = "";
+    scheduleRender(60);
+  });
+}
+
 // ---------------------------------------------------------------- controls
 
 function bindControls() {
@@ -168,6 +225,11 @@ function bindControls() {
   });
   $("#bgImageSel").addEventListener("change", () => {
     state.bg_image = $("#bgImageSel").value;
+    const box = $('.dropzone[data-side="bg"]').closest(".upbox");
+    box.querySelector(".thumbrow").classList.add("hidden");
+    box.querySelector(".dropzone").classList.remove("hidden");
+    $("#stBg").textContent = "no file";
+    $("#stBg").classList.remove("on");
     if (state.bg === "image") scheduleRender();
   });
 
@@ -288,6 +350,7 @@ async function init() {
 
   setUpSide("front");
   setUpSide("back");
+  setUpBg();
   bindControls();
 
   $("#btnDownload").addEventListener("click", downloadMockup);
