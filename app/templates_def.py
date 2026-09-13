@@ -16,7 +16,7 @@ from .services import qrsvc
 from .services.layout import qr_invert
 from .services.render import render_stacked
 
-TEMPLATE_VERSION = 5
+TEMPLATE_VERSION = 6
 
 SAMPLE_DATA = {
     "company": "Northwind Studio",
@@ -43,6 +43,91 @@ def back_qr(dark: bool, bg_key: str = "bg", line_key: str = "line") -> dict:
     }
 
 
+# ---------------------------------------------------------------- shape kit
+# Small reusable background motifs shared by the "smart card" (NFC / PVC /
+# metal) templates below, and used to give the original 10 a subtle 4-edge
+# frame so the whole set reads as one styled product line.
+
+def _frame(color: str = "accent", inset: float = 0.032, sw: float = 0.42) -> dict:
+    """Thin stroke-only rect just inside the trim — a border on all 4 sides."""
+    return {"t": "rect", "x": inset, "y": inset, "w": 1 - 2 * inset, "h": 1 - 2 * inset,
+            "stroke": color, "strokeW": sw}
+
+
+def _corner_brackets(color: str, inset: float = 0.032, arm: float = 0.055, sw: float = 1.0) -> list[dict]:
+    """4 L-shaped corner marks (camera-viewfinder style) as an alternative to a full frame."""
+    out = []
+    for cx, cy, sxn, syn in ((inset, inset, 1, 1), (1 - inset, inset, -1, 1),
+                              (inset, 1 - inset, 1, -1), (1 - inset, 1 - inset, -1, -1)):
+        out.append({"t": "line", "x1": cx, "y1": cy, "x2": cx + sxn * arm, "y2": cy, "stroke": color, "w": sw})
+        out.append({"t": "line", "x1": cx, "y1": cy, "x2": cx, "y2": cy + syn * arm, "stroke": color, "w": sw})
+    return out
+
+
+def _chip(x: float, y: float, w: float, h: float, plate: str = "accent", grid: str = "bg") -> list[dict]:
+    """Small metallic EMV-style chip decal — the "smart card" signature mark."""
+    return [
+        {"t": "rect", "x": x, "y": y, "w": w, "h": h, "fill": plate, "radius": 0.018},
+        {"t": "line", "x1": x + w * 0.34, "y1": y + h * 0.08, "x2": x + w * 0.34, "y2": y + h * 0.92,
+         "stroke": grid, "w": 0.35},
+        {"t": "line", "x1": x + w * 0.66, "y1": y + h * 0.08, "x2": x + w * 0.66, "y2": y + h * 0.92,
+         "stroke": grid, "w": 0.35},
+        {"t": "line", "x1": x + w * 0.08, "y1": y + h * 0.5, "x2": x + w * 0.92, "y2": y + h * 0.5,
+         "stroke": grid, "w": 0.35},
+    ]
+
+
+def _hairlines(n: int, color: str, y0: float = 0.10, y1: float = 0.90) -> list[dict]:
+    """Faint evenly-spaced horizontal lines — a cheap brushed-metal band hint."""
+    step = (y1 - y0) / max(1, n - 1)
+    return [{"t": "line", "x1": 0, "y1": y0 + i * step, "x2": 1, "y2": y0 + i * step,
+             "stroke": color, "w": 0.3} for i in range(n)]
+
+
+def _smart_front(palette_bg: str = "bg", frame_color: str = "accent", frame_mode: str = "line",
+                  chip_plate: str = "accent", chip_grid: str = "bg", nfc_color: str = "accent",
+                  name_font: str = "sansBold", name_color: str = "ink", name_size: float = 12.5,
+                  company_color: str = "sub", title_color: str = "sub", contact_color: str = "ink",
+                  website_color: str = "accent", qr_invert: bool = True,
+                  logo_xywh: tuple = (0.775, 0.075, 0.145, 0.115), extra_bg: list | None = None) -> dict:
+    """Shared skeleton for the NFC/metal-card templates: logo+company top,
+    name/title mid-left, contact block, a chip + "NFC" mark bottom-left,
+    QR bottom-right, and a 4-side frame (or corner brackets)."""
+    bg = [{"t": "rect", "x": 0, "y": 0, "w": 1, "h": 1, "fill": palette_bg, "bleed": True}]
+    if extra_bg:
+        bg += extra_bg
+    if frame_mode == "line":
+        bg.append(_frame(frame_color))
+    elif frame_mode == "corners":
+        bg += _corner_brackets(frame_color)
+    bg += _chip(0.055, 0.855, 0.115, 0.078, chip_plate, chip_grid)
+
+    lx, ly, lw, lh = logo_xywh
+    return {
+        "background": bg,
+        "elements": [
+            {"t": "image", "role": "logo", "x": lx, "y": ly, "w": lw, "h": lh, "fit": "contain"},
+            {"t": "text", "field": "company", "x": 0.07, "y": 0.09, "w": 0.55, "h": 0.05,
+             "size": 8, "font": "sans", "color": company_color, "align": "left",
+             "caps": True, "track": 0.18},
+            {"t": "text", "field": "name", "x": 0.07, "y": 0.40, "w": 0.62, "h": 0.10,
+             "size": name_size, "font": name_font, "color": name_color, "align": "left"},
+            {"t": "text", "field": "title", "x": 0.07, "y": 0.525, "w": 0.60, "h": 0.05,
+             "size": 7.5, "font": "sans", "color": title_color, "align": "left",
+             "caps": True, "track": 0.14},
+            {"t": "line", "x1": 0.07, "y1": 0.615, "x2": 0.21, "y2": 0.615, "stroke": frame_color, "w": 0.5},
+            {"t": "text", "field": ["phone", "email"], "x": 0.07, "y": 0.65, "w": 0.60, "h": 0.05,
+             "size": 7.5, "font": "sans", "color": contact_color, "align": "left"},
+            {"t": "text", "field": "website", "x": 0.07, "y": 0.715, "w": 0.60, "h": 0.05,
+             "size": 7.5, "font": "sans", "color": website_color, "align": "left"},
+            {"t": "text", "lit": "NFC", "x": 0.185, "y": 0.863, "w": 0.12, "h": 0.045,
+             "size": 6.5, "font": "sansBold", "color": nfc_color, "align": "left",
+             "caps": True, "track": 0.32},
+            {"t": "qr", "x": 0.845, "y": 0.785, "w": 0.10, "h": 0.14, "invert": qr_invert},
+        ],
+    }
+
+
 # ------------------------------------------------------------------- fronts
 
 def templates() -> list[dict]:
@@ -57,7 +142,10 @@ def templates() -> list[dict]:
                     "accent": "#C9A227", "line": "#E8E8E8", "panel": "#1A1A1F"},
         "sides": {
             "front": {
-                "background": [{"t": "rect", "x": 0, "y": 0, "w": 1, "h": 1, "fill": "bg", "bleed": True}],
+                "background": [
+                    {"t": "rect", "x": 0, "y": 0, "w": 1, "h": 1, "fill": "bg", "bleed": True},
+                    _frame("accent"),
+                ],
                 "elements": [
                     {"t": "image", "role": "logo", "x": 0.80, "y": 0.055, "w": 0.145, "h": 0.115, "fit": "contain"},
                     {"t": "text", "field": "company", "x": 0.055, "y": 0.065, "w": 0.45, "h": 0.05,
@@ -161,6 +249,7 @@ def templates() -> list[dict]:
                 "background": [
                     {"t": "rect", "x": 0, "y": 0, "w": 1, "h": 1, "fill": "bg", "bleed": True},
                     {"t": "rect", "x": 0, "y": 0, "w": 1, "h": 0.345, "fill": "band", "bleed": True},
+                    _frame("accent"),
                 ],
                 "elements": [
                     {"t": "image", "role": "logo", "x": 0.79, "y": 0.075, "w": 0.15, "h": 0.195, "fit": "contain"},
@@ -200,6 +289,7 @@ def templates() -> list[dict]:
                 "background": [
                     {"t": "rect", "x": 0, "y": 0, "w": 1, "h": 1, "fill": "bg", "bleed": True},
                     {"t": "poly", "pts": [[0.60, 1.04], [1.04, 1.04], [1.04, 0.34]], "fill": "accent"},
+                    _frame("accent"),
                 ],
                 "elements": [
                     {"t": "image", "role": "logo", "x": 0.795, "y": 0.075, "w": 0.135, "h": 0.115, "fit": "contain"},
@@ -270,6 +360,7 @@ def templates() -> list[dict]:
                 "background": [
                     {"t": "rect", "x": 0, "y": 0, "w": 1, "h": 1, "fill": "bg", "bleed": True},
                     {"t": "rect", "x": 0, "y": 0, "w": 0.02, "h": 1, "fill": "accent", "bleed": True},
+                    _frame("accent"),
                 ],
                 "elements": [
                     {"t": "text", "field": "company", "x": 0.07, "y": 0.115, "w": 0.50, "h": 0.065,
@@ -308,6 +399,7 @@ def templates() -> list[dict]:
                 "background": [
                     {"t": "rect", "x": 0, "y": 0, "w": 1, "h": 1, "fill": "bg", "bleed": True},
                     {"t": "rect", "x": 0, "y": 0, "w": 0.375, "h": 1, "fill": "panel", "bleed": True},
+                    _frame("accent"),
                 ],
                 "elements": [
                     {"t": "image", "role": "logo", "x": 0.775, "y": 0.085, "w": 0.15, "h": 0.12, "fit": "contain"},
@@ -342,7 +434,10 @@ def templates() -> list[dict]:
                     "accent": "#111111", "line": "#111111", "panel": "#FFFFFF"},
         "sides": {
             "front": {
-                "background": [{"t": "rect", "x": 0, "y": 0, "w": 1, "h": 1, "fill": "bg", "bleed": True}],
+                "background": [
+                    {"t": "rect", "x": 0, "y": 0, "w": 1, "h": 1, "fill": "bg", "bleed": True},
+                    _frame("accent"),
+                ],
                 "elements": [
                     {"t": "image", "role": "logo", "x": 0.80, "y": 0.075, "w": 0.12, "h": 0.10, "fit": "contain"},
                     {"t": "text", "field": "company", "x": 0.08, "y": 0.10, "w": 0.60, "h": 0.05,
@@ -379,6 +474,7 @@ def templates() -> list[dict]:
                     {"t": "rect", "x": 0, "y": 0, "w": 1, "h": 1, "fill": "bg", "bleed": True},
                     {"t": "ellipse", "x": 0.565, "y": 0.145, "w": 0.37, "h": 0.71,
                      "stroke": "accent", "strokeW": 1.0, "circle": True},
+                    _frame("accent"),
                 ],
                 "elements": [
                     {"t": "image", "role": "photo", "x": 0.585, "y": 0.175, "w": 0.33, "h": 0.64,
@@ -404,6 +500,253 @@ def templates() -> list[dict]:
                 ],
             },
             "back": back_qr(dark=False),
+        },
+    })
+
+    # ---------------------------------------------------------- smart cards
+    # 11–20: styled for NFC / PVC / metal card printing — 4-side frame (or
+    # corner brackets), a metallic chip decal + "NFC" mark, brushed-metal
+    # hairline banding. Built on the shared _smart_front() skeleton except
+    # where the layout itself needed to differ (13, 14, 18).
+
+    # 11 - Gunmetal Chip (brushed steel, silver chip)
+    out.append({
+        "id": "template-11", "name": "Gunmetal Chip",
+        "desc": "Brushed gunmetal steel, silver frame + chip — NFC / metal card",
+        "v": TEMPLATE_VERSION,
+        "palette": {"bg": "#2A2D31", "ink": "#F2F3F4", "sub": "#9AA0A7",
+                    "accent": "#C9CDD2", "line": "#C9CDD2", "panel": "#34383D"},
+        "sides": {
+            "front": _smart_front(
+                extra_bg=_hairlines(7, "panel"),
+                chip_plate="accent", chip_grid="bg", nfc_color="accent",
+                name_font="sansBold", website_color="accent", qr_invert=True,
+            ),
+            "back": back_qr(dark=True),
+        },
+    })
+
+    # 12 - Rose Gold Steel (matte black, rose-gold chip + frame)
+    out.append({
+        "id": "template-12", "name": "Rose Gold Steel",
+        "desc": "Matte black metal card, rose-gold frame + chip",
+        "v": TEMPLATE_VERSION,
+        "palette": {"bg": "#141013", "ink": "#FFFFFF", "sub": "#BBA9AC",
+                    "accent": "#B76E79", "line": "#B76E79", "panel": "#241A1D"},
+        "sides": {
+            "front": _smart_front(
+                chip_plate="accent", chip_grid="bg", nfc_color="accent",
+                name_font="serifBold", website_color="accent", qr_invert=True,
+            ),
+            "back": back_qr(dark=True),
+        },
+    })
+
+    # 13 - Carbon Weave (diagonal weave corner, amber tech accent)
+    out.append({
+        "id": "template-13", "name": "Carbon Weave",
+        "desc": "Carbon-fibre corner weave, amber tech accent — NFC metal card",
+        "v": TEMPLATE_VERSION,
+        "palette": {"bg": "#17181A", "ink": "#FFFFFF", "sub": "#9CA3A8",
+                    "accent": "#FF6A3D", "line": "#FF6A3D", "panel": "#1F2124"},
+        "sides": {
+            "front": {
+                "background": [
+                    {"t": "rect", "x": 0, "y": 0, "w": 1, "h": 1, "fill": "bg", "bleed": True},
+                    {"t": "poly", "pts": [[0.58, -0.04], [1.04, -0.04], [1.04, 0.46]], "fill": "panel"},
+                    {"t": "line", "x1": 0.66, "y1": -0.02, "x2": 0.80, "y2": 0.42, "stroke": "accent", "w": 0.35},
+                    {"t": "line", "x1": 0.78, "y1": -0.02, "x2": 0.92, "y2": 0.42, "stroke": "accent", "w": 0.35},
+                    {"t": "line", "x1": 0.90, "y1": -0.02, "x2": 1.02, "y2": 0.34, "stroke": "accent", "w": 0.35},
+                    _frame("accent"),
+                    *_chip(0.055, 0.855, 0.115, 0.078, "accent", "bg"),
+                ],
+                "elements": [
+                    {"t": "image", "role": "logo", "x": 0.795, "y": 0.09, "w": 0.125, "h": 0.10, "fit": "contain"},
+                    {"t": "text", "field": "company", "x": 0.07, "y": 0.09, "w": 0.55, "h": 0.05,
+                     "size": 8, "font": "sans", "color": "sub", "align": "left", "caps": True, "track": 0.18},
+                    {"t": "text", "field": "name", "x": 0.07, "y": 0.40, "w": 0.60, "h": 0.10,
+                     "size": 12.5, "font": "sansBold", "color": "ink", "align": "left"},
+                    {"t": "text", "field": "title", "x": 0.07, "y": 0.525, "w": 0.60, "h": 0.05,
+                     "size": 7.5, "font": "sans", "color": "accent", "align": "left",
+                     "caps": True, "track": 0.14},
+                    {"t": "line", "x1": 0.07, "y1": 0.615, "x2": 0.21, "y2": 0.615, "stroke": "accent", "w": 0.5},
+                    {"t": "text", "field": ["phone", "email"], "x": 0.07, "y": 0.65, "w": 0.60, "h": 0.05,
+                     "size": 7.5, "font": "sans", "color": "ink", "align": "left"},
+                    {"t": "text", "field": "website", "x": 0.07, "y": 0.715, "w": 0.60, "h": 0.05,
+                     "size": 7.5, "font": "sans", "color": "accent", "align": "left"},
+                    {"t": "text", "lit": "NFC", "x": 0.185, "y": 0.863, "w": 0.12, "h": 0.045,
+                     "size": 6.5, "font": "sansBold", "color": "accent", "align": "left",
+                     "caps": True, "track": 0.32},
+                    {"t": "qr", "x": 0.845, "y": 0.785, "w": 0.10, "h": 0.14, "invert": True},
+                ],
+            },
+            "back": back_qr(dark=True),
+        },
+    })
+
+    # 14 - Gold Foil Onyx (centered luxury double frame, black + gold)
+    out.append({
+        "id": "template-14", "name": "Gold Foil Onyx",
+        "desc": "Onyx black, double gold foil frame, centered serif — metal card",
+        "v": TEMPLATE_VERSION,
+        "palette": {"bg": "#000000", "ink": "#FFFFFF", "sub": "#C9C9C9",
+                    "accent": "#D4AF37", "line": "#D4AF37", "panel": "#141414"},
+        "sides": {
+            "front": {
+                "background": [
+                    {"t": "rect", "x": 0, "y": 0, "w": 1, "h": 1, "fill": "bg", "bleed": True},
+                    _frame("accent", inset=0.045, sw=0.55),
+                    _frame("accent", inset=0.06, sw=0.22),
+                    *_chip(0.055, 0.855, 0.115, 0.078, "accent", "bg"),
+                ],
+                "elements": [
+                    {"t": "image", "role": "logo", "x": 0.775, "y": 0.09, "w": 0.14, "h": 0.105, "fit": "contain"},
+                    {"t": "text", "field": "company", "x": 0.10, "y": 0.20, "w": 0.80, "h": 0.06,
+                     "size": 9, "font": "serifBold", "color": "accent", "align": "center",
+                     "caps": True, "track": 0.18},
+                    {"t": "line", "x1": 0.43, "y1": 0.285, "x2": 0.57, "y2": 0.285, "stroke": "accent", "w": 0.6},
+                    {"t": "text", "field": "name", "x": 0.10, "y": 0.325, "w": 0.80, "h": 0.105,
+                     "size": 13, "font": "serifBold", "color": "ink", "align": "center",
+                     "caps": True, "track": 0.06},
+                    {"t": "text", "field": "title", "x": 0.10, "y": 0.445, "w": 0.80, "h": 0.055,
+                     "size": 7.5, "font": "sans", "color": "sub", "align": "center",
+                     "caps": True, "track": 0.16},
+                    {"t": "text", "field": ["phone", "email"], "x": 0.10, "y": 0.605, "w": 0.80, "h": 0.055,
+                     "size": 7.5, "font": "sans", "color": "ink", "align": "center"},
+                    {"t": "text", "field": "website", "x": 0.10, "y": 0.675, "w": 0.80, "h": 0.05,
+                     "size": 7.5, "font": "sans", "color": "accent", "align": "center"},
+                    {"t": "text", "lit": "NFC", "x": 0.185, "y": 0.863, "w": 0.12, "h": 0.045,
+                     "size": 6.5, "font": "sansBold", "color": "accent", "align": "left",
+                     "caps": True, "track": 0.32},
+                    {"t": "qr", "x": 0.845, "y": 0.785, "w": 0.10, "h": 0.14, "invert": True},
+                ],
+            },
+            "back": back_qr(dark=True),
+        },
+    })
+
+    # 15 - Chrome Line (light brushed aluminium, tech blue accent)
+    out.append({
+        "id": "template-15", "name": "Chrome Line",
+        "desc": "Brushed aluminium light metal, tech-blue accent — PVC smart card",
+        "v": TEMPLATE_VERSION,
+        "palette": {"bg": "#EDEEF0", "ink": "#1F2933", "sub": "#5B6570",
+                    "accent": "#1D4ED8", "line": "#1D4ED8", "panel": "#E1E3E6"},
+        "sides": {
+            "front": _smart_front(
+                extra_bg=_hairlines(7, "panel"),
+                chip_plate="accent", chip_grid="ink", nfc_color="accent",
+                name_font="sansBold", website_color="accent", qr_invert=False,
+            ),
+            "back": back_qr(dark=False),
+        },
+    })
+
+    # 16 - Signal Navy (dark navy/cyan tech)
+    out.append({
+        "id": "template-16", "name": "Signal Navy",
+        "desc": "Deep navy tech surface, cyan frame + chip — NFC smart card",
+        "v": TEMPLATE_VERSION,
+        "palette": {"bg": "#071A2E", "ink": "#FFFFFF", "sub": "#8FA6BD",
+                    "accent": "#22D3EE", "line": "#22D3EE", "panel": "#0D2740"},
+        "sides": {
+            "front": _smart_front(
+                extra_bg=_hairlines(7, "panel"),
+                chip_plate="accent", chip_grid="bg", nfc_color="accent",
+                name_font="sansBold", website_color="accent", qr_invert=True,
+            ),
+            "back": back_qr(dark=True),
+        },
+    })
+
+    # 17 - Matte Black Frame (minimal matte black + silver frame/chip)
+    out.append({
+        "id": "template-17", "name": "Matte Black Frame",
+        "desc": "Matte black minimal, silver frame + chip — metal card",
+        "v": TEMPLATE_VERSION,
+        "palette": {"bg": "#0A0A0A", "ink": "#FFFFFF", "sub": "#8C8C8C",
+                    "accent": "#D9D9D9", "line": "#D9D9D9", "panel": "#141414"},
+        "sides": {
+            "front": _smart_front(
+                chip_plate="accent", chip_grid="bg", nfc_color="accent",
+                name_font="sansBold", website_color="accent", qr_invert=True,
+            ),
+            "back": back_qr(dark=True),
+        },
+    })
+
+    # 18 - Titanium Split (gunmetal panel + orange, chip on panel)
+    out.append({
+        "id": "template-18", "name": "Titanium Split",
+        "desc": "Gunmetal side panel, orange tech accent — NFC PVC card",
+        "v": TEMPLATE_VERSION,
+        "palette": {"bg": "#FFFFFF", "panel": "#2E3238", "ink": "#1F2937", "sub": "#6B7280",
+                    "accent": "#FF7A00", "line": "#FF7A00", "onpanel": "#FFFFFF",
+                    "onpanelSub": "#C7CBCE"},
+        "sides": {
+            "front": {
+                "background": [
+                    {"t": "rect", "x": 0, "y": 0, "w": 1, "h": 1, "fill": "bg", "bleed": True},
+                    {"t": "rect", "x": 0, "y": 0, "w": 0.375, "h": 1, "fill": "panel", "bleed": True},
+                    _frame("accent"),
+                    *_chip(0.055, 0.805, 0.10, 0.072, "accent", "onpanel"),
+                ],
+                "elements": [
+                    {"t": "image", "role": "logo", "x": 0.775, "y": 0.085, "w": 0.15, "h": 0.12, "fit": "contain"},
+                    {"t": "text", "field": "company", "x": 0.045, "y": 0.635, "w": 0.285, "h": 0.05,
+                     "size": 7.5, "font": "sansBold", "color": "onpanel", "align": "center",
+                     "caps": True, "track": 0.12},
+                    {"t": "text", "field": "name", "x": 0.47, "y": 0.325, "w": 0.46, "h": 0.09,
+                     "size": 12, "font": "sansBold", "color": "ink", "align": "left"},
+                    {"t": "text", "field": "title", "x": 0.47, "y": 0.445, "w": 0.46, "h": 0.05,
+                     "size": 7.5, "font": "sans", "color": "accent", "align": "left",
+                     "caps": True, "track": 0.10},
+                    {"t": "line", "x1": 0.47, "y1": 0.535, "x2": 0.56, "y2": 0.535, "stroke": "accent", "w": 0.6},
+                    {"t": "text", "field": ["phone", "email"], "x": 0.47, "y": 0.585, "w": 0.46, "h": 0.05,
+                     "size": 7.5, "font": "sans", "color": "ink", "align": "left"},
+                    {"t": "text", "field": "website", "x": 0.47, "y": 0.65, "w": 0.46, "h": 0.05,
+                     "size": 7.5, "font": "sans", "color": "accent", "align": "left"},
+                    {"t": "text", "lit": "NFC", "x": 0.045, "y": 0.885, "w": 0.24, "h": 0.04,
+                     "size": 6.5, "font": "sansBold", "color": "onpanelSub", "align": "center",
+                     "caps": True, "track": 0.3},
+                    {"t": "qr", "x": 0.855, "y": 0.775, "w": 0.10, "h": 0.13, "invert": False},
+                ],
+            },
+            "back": back_qr(dark=True, bg_key="panel", line_key="onpanel"),
+        },
+    })
+
+    # 19 - Onyx Double Gold (asymmetric, serif gold, double frame)
+    out.append({
+        "id": "template-19", "name": "Onyx Double Gold",
+        "desc": "Onyx black, double gold frame, serif name — metal card",
+        "v": TEMPLATE_VERSION,
+        "palette": {"bg": "#0D0D0D", "ink": "#FFFFFF", "sub": "#ADB0B6",
+                    "accent": "#C9A227", "line": "#C9A227", "panel": "#1A1A1A"},
+        "sides": {
+            "front": _smart_front(
+                extra_bg=[_frame("accent", inset=0.06, sw=0.24)],
+                chip_plate="accent", chip_grid="bg", nfc_color="accent",
+                name_font="serifBold", website_color="accent", qr_invert=True,
+            ),
+            "back": back_qr(dark=True),
+        },
+    })
+
+    # 20 - Graphite Copper (corner brackets instead of a full frame)
+    out.append({
+        "id": "template-20", "name": "Graphite Copper",
+        "desc": "Graphite metal, copper corner brackets + chip — NFC card",
+        "v": TEMPLATE_VERSION,
+        "palette": {"bg": "#1C1C1E", "ink": "#FFFFFF", "sub": "#9C9C9E",
+                    "accent": "#C77B4D", "line": "#C77B4D", "panel": "#262628"},
+        "sides": {
+            "front": _smart_front(
+                frame_mode="corners",
+                chip_plate="accent", chip_grid="bg", nfc_color="accent",
+                name_font="sansBold", website_color="accent", qr_invert=True,
+            ),
+            "back": back_qr(dark=True),
         },
     })
 

@@ -1,0 +1,262 @@
+{
+  "id": "template-16",
+  "name": "Signal Navy",
+  "desc": "Deep navy tech surface, cyan frame + chip — NFC smart card",
+  "v": 6,
+  "palette": {
+    "bg": "#071A2E",
+    "ink": "#FFFFFF",
+    "sub": "#8FA6BD",
+    "accent": "#22D3EE",
+    "line": "#22D3EE",
+    "panel": "#0D2740"
+  },
+  "sides": {
+    "front": {
+      "background": [
+        {
+          "t": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "fill": "bg",
+          "bleed": true
+        },
+        {
+          "t": "line",
+          "x1": 0,
+          "y1": 0.1,
+          "x2": 1,
+          "y2": 0.1,
+          "stroke": "panel",
+          "w": 0.3
+        },
+        {
+          "t": "line",
+          "x1": 0,
+          "y1": 0.23333333333333334,
+          "x2": 1,
+          "y2": 0.23333333333333334,
+          "stroke": "panel",
+          "w": 0.3
+        },
+        {
+          "t": "line",
+          "x1": 0,
+          "y1": 0.3666666666666667,
+          "x2": 1,
+          "y2": 0.3666666666666667,
+          "stroke": "panel",
+          "w": 0.3
+        },
+        {
+          "t": "line",
+          "x1": 0,
+          "y1": 0.5,
+          "x2": 1,
+          "y2": 0.5,
+          "stroke": "panel",
+          "w": 0.3
+        },
+        {
+          "t": "line",
+          "x1": 0,
+          "y1": 0.6333333333333333,
+          "x2": 1,
+          "y2": 0.6333333333333333,
+          "stroke": "panel",
+          "w": 0.3
+        },
+        {
+          "t": "line",
+          "x1": 0,
+          "y1": 0.7666666666666666,
+          "x2": 1,
+          "y2": 0.7666666666666666,
+          "stroke": "panel",
+          "w": 0.3
+        },
+        {
+          "t": "line",
+          "x1": 0,
+          "y1": 0.9,
+          "x2": 1,
+          "y2": 0.9,
+          "stroke": "panel",
+          "w": 0.3
+        },
+        {
+          "t": "rect",
+          "x": 0.032,
+          "y": 0.032,
+          "w": 0.9359999999999999,
+          "h": 0.9359999999999999,
+          "stroke": "accent",
+          "strokeW": 0.42
+        },
+        {
+          "t": "rect",
+          "x": 0.055,
+          "y": 0.855,
+          "w": 0.115,
+          "h": 0.078,
+          "fill": "accent",
+          "radius": 0.018
+        },
+        {
+          "t": "line",
+          "x1": 0.0941,
+          "y1": 0.86124,
+          "x2": 0.0941,
+          "y2": 0.92676,
+          "stroke": "bg",
+          "w": 0.35
+        },
+        {
+          "t": "line",
+          "x1": 0.13090000000000002,
+          "y1": 0.86124,
+          "x2": 0.13090000000000002,
+          "y2": 0.92676,
+          "stroke": "bg",
+          "w": 0.35
+        },
+        {
+          "t": "line",
+          "x1": 0.06420000000000001,
+          "y1": 0.894,
+          "x2": 0.1608,
+          "y2": 0.894,
+          "stroke": "bg",
+          "w": 0.35
+        }
+      ],
+      "elements": [
+        {
+          "t": "image",
+          "role": "logo",
+          "x": 0.775,
+          "y": 0.075,
+          "w": 0.145,
+          "h": 0.115,
+          "fit": "contain"
+        },
+        {
+          "t": "text",
+          "field": "company",
+          "x": 0.07,
+          "y": 0.09,
+          "w": 0.55,
+          "h": 0.05,
+          "size": 8,
+          "font": "sans",
+          "color": "sub",
+          "align": "left",
+          "caps": true,
+          "track": 0.18
+        },
+        {
+          "t": "text",
+          "field": "name",
+          "x": 0.07,
+          "y": 0.4,
+          "w": 0.62,
+          "h": 0.1,
+          "size": 12.5,
+          "font": "sansBold",
+          "color": "ink",
+          "align": "left"
+        },
+        {
+          "t": "text",
+          "field": "title",
+          "x": 0.07,
+          "y": 0.525,
+          "w": 0.6,
+          "h": 0.05,
+          "size": 7.5,
+          "font": "sans",
+          "color": "sub",
+          "align": "left",
+          "caps": true,
+          "track": 0.14
+        },
+        {
+          "t": "line",
+          "x1": 0.07,
+          "y1": 0.615,
+          "x2": 0.21,
+          "y2": 0.615,
+          "stroke": "accent",
+          "w": 0.5
+        },
+        {
+          "t": "text",
+          "field": [
+            "phone",
+            "email"
+          ],
+          "x": 0.07,
+          "y": 0.65,
+          "w": 0.6,
+          "h": 0.05,
+          "size": 7.5,
+          "font": "sans",
+          "color": "ink",
+          "align": "left"
+        },
+        {
+          "t": "text",
+          "field": "website",
+          "x": 0.07,
+          "y": 0.715,
+          "w": 0.6,
+          "h": 0.05,
+          "size": 7.5,
+          "font": "sans",
+          "color": "accent",
+          "align": "left"
+        },
+        {
+          "t": "text",
+          "lit": "NFC",
+          "x": 0.185,
+          "y": 0.863,
+          "w": 0.12,
+          "h": 0.045,
+          "size": 6.5,
+          "font": "sansBold",
+          "color": "accent",
+          "align": "left",
+          "caps": true,
+          "track": 0.32
+        },
+        {
+          "t": "qr",
+          "x": 0.845,
+          "y": 0.785,
+          "w": 0.1,
+          "h": 0.14,
+          "invert": true
+        }
+      ]
+    },
+    "back": {
+      "background": [
+        {
+          "t": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "fill": "bg",
+          "bleed": true
+        }
+      ],
+      "dynamic": "qr_back",
+      "invert": true,
+      "line_key": "line"
+    }
+  }
+}

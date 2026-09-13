@@ -2,7 +2,7 @@
   "id": "template-07",
   "name": "Azure Bold",
   "desc": "Deep blue with a cyan edge stripe",
-  "v": 5,
+  "v": 6,
   "palette": {
     "bg": "#0A3D91",
     "ink": "#FFFFFF",
@@ -31,6 +31,15 @@
           "h": 1,
           "fill": "accent",
           "bleed": true
+        },
+        {
+          "t": "rect",
+          "x": 0.032,
+          "y": 0.032,
+          "w": 0.9359999999999999,
+          "h": 0.9359999999999999,
+          "stroke": "accent",
+          "strokeW": 0.42
         }
       ],
       "elements": [

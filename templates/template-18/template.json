@@ -1,17 +1,17 @@
 {
-  "id": "template-08",
-  "name": "Split Brand",
-  "desc": "Solid brand panel on the left, contact block on the right",
+  "id": "template-18",
+  "name": "Titanium Split",
+  "desc": "Gunmetal side panel, orange tech accent — NFC PVC card",
   "v": 6,
   "palette": {
     "bg": "#FFFFFF",
-    "panel": "#14532D",
+    "panel": "#2E3238",
     "ink": "#1F2937",
     "sub": "#6B7280",
-    "accent": "#14532D",
-    "line": "#14532D",
+    "accent": "#FF7A00",
+    "line": "#FF7A00",
     "onpanel": "#FFFFFF",
-    "onpanelSub": "#A7C4B5"
+    "onpanelSub": "#C7CBCE"
   },
   "sides": {
     "front": {
@@ -42,6 +42,42 @@
           "h": 0.9359999999999999,
           "stroke": "accent",
           "strokeW": 0.42
+        },
+        {
+          "t": "rect",
+          "x": 0.055,
+          "y": 0.805,
+          "w": 0.1,
+          "h": 0.072,
+          "fill": "accent",
+          "radius": 0.018
+        },
+        {
+          "t": "line",
+          "x1": 0.089,
+          "y1": 0.81076,
+          "x2": 0.089,
+          "y2": 0.87124,
+          "stroke": "onpanel",
+          "w": 0.35
+        },
+        {
+          "t": "line",
+          "x1": 0.121,
+          "y1": 0.81076,
+          "x2": 0.121,
+          "y2": 0.87124,
+          "stroke": "onpanel",
+          "w": 0.35
+        },
+        {
+          "t": "line",
+          "x1": 0.063,
+          "y1": 0.8410000000000001,
+          "x2": 0.14700000000000002,
+          "y2": 0.8410000000000001,
+          "stroke": "onpanel",
+          "w": 0.35
         }
       ],
       "elements": [
@@ -57,16 +93,16 @@
         {
           "t": "text",
           "field": "company",
-          "x": 0.055,
+          "x": 0.045,
           "y": 0.635,
-          "w": 0.265,
+          "w": 0.285,
           "h": 0.05,
           "size": 7.5,
           "font": "sansBold",
           "color": "onpanel",
           "align": "center",
           "caps": true,
-          "track": 0.14
+          "track": 0.12
         },
         {
           "t": "text",
@@ -132,20 +168,22 @@
         },
         {
           "t": "text",
-          "field": "address",
-          "x": 0.47,
-          "y": 0.715,
-          "w": 0.46,
-          "h": 0.05,
-          "size": 7,
-          "font": "sans",
-          "color": "sub",
-          "align": "left"
+          "lit": "NFC",
+          "x": 0.045,
+          "y": 0.885,
+          "w": 0.24,
+          "h": 0.04,
+          "size": 6.5,
+          "font": "sansBold",
+          "color": "onpanelSub",
+          "align": "center",
+          "caps": true,
+          "track": 0.3
         },
         {
           "t": "qr",
           "x": 0.855,
-          "y": 0.8,
+          "y": 0.775,
           "w": 0.1,
           "h": 0.13,
           "invert": false

@@ -1,15 +1,15 @@
 {
-  "id": "template-02",
-  "name": "Classic Ivory",
-  "desc": "Ivory paper, gold double frame, centered serif",
+  "id": "template-14",
+  "name": "Gold Foil Onyx",
+  "desc": "Onyx black, double gold foil frame, centered serif — metal card",
   "v": 6,
   "palette": {
-    "bg": "#FBF8F1",
-    "ink": "#1E2A3A",
-    "sub": "#6E7A88",
-    "accent": "#B08D3E",
-    "line": "#D9CBA8",
-    "panel": "#FFFFFF"
+    "bg": "#000000",
+    "ink": "#FFFFFF",
+    "sub": "#C9C9C9",
+    "accent": "#D4AF37",
+    "line": "#D4AF37",
+    "panel": "#141414"
   },
   "sides": {
     "front": {
@@ -26,20 +26,56 @@
         {
           "t": "rect",
           "x": 0.045,
-          "y": 0.06,
+          "y": 0.045,
           "w": 0.91,
+          "h": 0.91,
+          "stroke": "accent",
+          "strokeW": 0.55
+        },
+        {
+          "t": "rect",
+          "x": 0.06,
+          "y": 0.06,
+          "w": 0.88,
           "h": 0.88,
           "stroke": "accent",
-          "strokeW": 0.6
+          "strokeW": 0.22
         },
         {
           "t": "rect",
           "x": 0.055,
-          "y": 0.072,
-          "w": 0.89,
-          "h": 0.856,
-          "stroke": "accent",
-          "strokeW": 0.25
+          "y": 0.855,
+          "w": 0.115,
+          "h": 0.078,
+          "fill": "accent",
+          "radius": 0.018
+        },
+        {
+          "t": "line",
+          "x1": 0.0941,
+          "y1": 0.86124,
+          "x2": 0.0941,
+          "y2": 0.92676,
+          "stroke": "bg",
+          "w": 0.35
+        },
+        {
+          "t": "line",
+          "x1": 0.13090000000000002,
+          "y1": 0.86124,
+          "x2": 0.13090000000000002,
+          "y2": 0.92676,
+          "stroke": "bg",
+          "w": 0.35
+        },
+        {
+          "t": "line",
+          "x1": 0.06420000000000001,
+          "y1": 0.894,
+          "x2": 0.1608,
+          "y2": 0.894,
+          "stroke": "bg",
+          "w": 0.35
         }
       ],
       "elements": [
@@ -56,7 +92,7 @@
           "t": "text",
           "field": "company",
           "x": 0.1,
-          "y": 0.265,
+          "y": 0.2,
           "w": 0.8,
           "h": 0.06,
           "size": 9,
@@ -69,9 +105,9 @@
         {
           "t": "line",
           "x1": 0.43,
-          "y1": 0.345,
+          "y1": 0.285,
           "x2": 0.57,
-          "y2": 0.345,
+          "y2": 0.285,
           "stroke": "accent",
           "w": 0.6
         },
@@ -79,7 +115,7 @@
           "t": "text",
           "field": "name",
           "x": 0.1,
-          "y": 0.385,
+          "y": 0.325,
           "w": 0.8,
           "h": 0.105,
           "size": 13,
@@ -93,7 +129,7 @@
           "t": "text",
           "field": "title",
           "x": 0.1,
-          "y": 0.505,
+          "y": 0.445,
           "w": 0.8,
           "h": 0.055,
           "size": 7.5,
@@ -110,7 +146,7 @@
             "email"
           ],
           "x": 0.1,
-          "y": 0.68,
+          "y": 0.605,
           "w": 0.8,
           "h": 0.055,
           "size": 7.5,
@@ -120,26 +156,37 @@
         },
         {
           "t": "text",
-          "field": [
-            "website",
-            "address"
-          ],
+          "field": "website",
           "x": 0.1,
-          "y": 0.755,
+          "y": 0.675,
           "w": 0.8,
-          "h": 0.055,
-          "size": 7,
+          "h": 0.05,
+          "size": 7.5,
           "font": "sans",
-          "color": "sub",
+          "color": "accent",
           "align": "center"
+        },
+        {
+          "t": "text",
+          "lit": "NFC",
+          "x": 0.185,
+          "y": 0.863,
+          "w": 0.12,
+          "h": 0.045,
+          "size": 6.5,
+          "font": "sansBold",
+          "color": "accent",
+          "align": "left",
+          "caps": true,
+          "track": 0.32
         },
         {
           "t": "qr",
           "x": 0.845,
-          "y": 0.795,
-          "w": 0.09,
-          "h": 0.125,
-          "invert": false
+          "y": 0.785,
+          "w": 0.1,
+          "h": 0.14,
+          "invert": true
         }
       ]
     },
@@ -156,7 +203,7 @@
         }
       ],
       "dynamic": "qr_back",
-      "invert": false,
+      "invert": true,
       "line_key": "line"
     }
   }

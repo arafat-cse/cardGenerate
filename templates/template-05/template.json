@@ -2,7 +2,7 @@
   "id": "template-05",
   "name": "Teal Cut",
   "desc": "White card with a diagonal teal wedge",
-  "v": 5,
+  "v": 6,
   "palette": {
     "bg": "#FFFFFF",
     "ink": "#0F172A",
@@ -40,6 +40,15 @@
             ]
           ],
           "fill": "accent"
+        },
+        {
+          "t": "rect",
+          "x": 0.032,
+          "y": 0.032,
+          "w": 0.9359999999999999,
+          "h": 0.9359999999999999,
+          "stroke": "accent",
+          "strokeW": 0.42
         }
       ],
       "elements": [
