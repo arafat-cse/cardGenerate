@@ -1,5 +1,6 @@
 import hashlib
 import json
+import math
 import re
 import subprocess
 import time
@@ -11,9 +12,9 @@ from pydantic import BaseModel
 
 from . import templates_def
 from .config import (
-    AI_DIR, BASE_DIR, DEFAULT_LOGO, DEFAULT_QR, GENERATED_DIR, ILLUSTRATOR_DIR, MOCKUP_BG_DIR,
-    MOCKUP_OUT_DIR, OUTPUT_DPI, PDF_DIR, PNG_DIR, PREVIEW_DIR, PREVIEW_DPI, TEMPLATES_DIR,
-    UPLOADS_DIR, ensure_dirs, resolve_user_path,
+    AI_DIR, BASE_DIR, BLEED_IN, CARD_H_IN, CARD_W_IN, DEFAULT_LOGO, DEFAULT_QR, GENERATED_DIR,
+    ILLUSTRATOR_DIR, MOCKUP_BG_DIR, MOCKUP_OUT_DIR, OUTPUT_DPI, PDF_DIR, PNG_DIR, PREVIEW_DIR,
+    PREVIEW_DPI, TEMPLATES_DIR, UPLOADS_DIR, ensure_dirs, resolve_user_path,
 )
 from .fonts import resolve as resolve_font
 from .services import ai_illust, mockupsvc, pdfsvc, prepsvc, qrsvc, render
@@ -121,6 +122,47 @@ def list_templates():
     return templates_def.list_templates()
 
 
+@app.get("/api/templates/{template_id}/config")
+def template_config(template_id: str):
+    tpl = templates_def.load(template_id)
+    if not tpl:
+        raise HTTPException(404, f"Unknown template: {template_id}")
+    return tpl
+
+
+class TemplateCreateReq(BaseModel):
+    name: str = "Untitled"
+    source_id: Optional[str] = None
+
+
+@app.post("/api/templates/custom")
+def create_custom_template(req: TemplateCreateReq):
+    try:
+        return templates_def.new_custom(req.name, req.source_id)
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+
+
+@app.put("/api/templates/custom/{template_id}")
+def update_custom_template(template_id: str, tpl: dict):
+    if tpl.get("id") != template_id:
+        raise HTTPException(400, "Template id in body must match the URL")
+    try:
+        templates_def.save_custom(tpl)
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    return {"ok": True}
+
+
+@app.delete("/api/templates/custom/{template_id}")
+def delete_custom_template(template_id: str):
+    try:
+        templates_def.delete_custom(template_id)
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    return {"ok": True}
+
+
 @app.post("/api/upload/{kind}")
 async def upload(kind: str, cid: str = Form(...), file: UploadFile = File(...)):
     if kind not in ("logos", "photos", "qr"):
@@ -158,6 +200,36 @@ def preview(req: RenderReq):
     data = req.data.model_dump()
     img = render.render_stacked(tpl, data, assets, qr_img, PREVIEW_DPI)
     out = PREVIEW_DIR / f"{re.sub(r'[^a-zA-Z0-9_-]', '', req.cid)[:32] or 'preview'}_preview.png"
+    img.save(out, "PNG", optimize=True)
+    return {"url": f"/generated/preview/{out.name}?v={int(time.time())}"}
+
+
+class SidePreviewReq(BaseModel):
+    cid: str
+    template_id: str
+    side: str
+    data: CardData = CardData()
+
+
+@app.post("/api/templates/preview-side")
+def preview_side(req: SidePreviewReq):
+    """Single-side, trim-only (no bleed, no gap/border) preview PNG — used by
+    the template editor so drag overlays line up pixel-for-pixel with the
+    render. /api/preview stacks front+back with bleed/border, which is right
+    for the card-builder page but not for an editing canvas."""
+    if req.side not in ("front", "back"):
+        raise HTTPException(400, "side must be 'front' or 'back'")
+    rr = RenderReq(cid=req.cid, template_id=req.template_id, data=req.data)
+    tpl = _load_tpl(rr.template_id)
+    assets = _assets_of(rr)
+    qr_img = _qr_of(rr, tpl)
+    img = render.render_side(tpl, req.side, rr.data.model_dump(), {**assets, "qr": qr_img}, PREVIEW_DPI)
+    bleed = round(BLEED_IN * PREVIEW_DPI)
+    w = round(CARD_W_IN * PREVIEW_DPI)
+    h = round(CARD_H_IN * PREVIEW_DPI)
+    img = img.crop((bleed, bleed, bleed + w, bleed + h))
+    cid_safe = re.sub(r"[^a-zA-Z0-9_-]", "", req.cid)[:32] or "preview"
+    out = PREVIEW_DIR / f"{cid_safe}_{req.side}_side_preview.png"
     img.save(out, "PNG", optimize=True)
     return {"url": f"/generated/preview/{out.name}?v={int(time.time())}"}
 
@@ -357,6 +429,59 @@ def mockup_render(req: MockupReq):
         with Image.open(out) as im:
             w, h = im.size
     return {"url": f"/generated/mockups/{out.name}", "width": w, "height": h}
+
+
+class MockupGifReq(MockupReq):
+    frames: int = 24
+    fps: int = 12
+    spin_amplitude: float = 18.0
+
+
+@app.post("/api/mockup/render-gif")
+def mockup_render_gif(req: MockupGifReq):
+    """Animated GIF export — sweeps `perspective` in a sine loop around its
+    base value (that's what actually makes the card look like it's turning
+    in 3D; the `rotation` slider is only a 2D in-plane spin), reusing
+    mockupsvc.render() unchanged, one call per frame."""
+    front = _mockup_src(req.front)
+    back = _mockup_src(req.back)
+    bg_image = _mockup_src(req.bg_image)
+    if not front and not back:
+        raise HTTPException(400, "Upload a front or back image first")
+
+    frames_n = max(8, min(int(req.frames), 48))
+    fps = max(4, min(int(req.fps), 24))
+    amp = max(0.0, min(float(req.spin_amplitude), 45.0))
+    base_persp = max(0.0, min(float(req.perspective), 100.0))
+    w = max(320, min(int(req.width), 1280))
+    h = max(240, min(int(req.height), 1280))
+
+    opts_base = {
+        "scene": req.scene, "bg": req.bg, "custom_color": req.custom_color,
+        "bg_image": str(bg_image) if bg_image else None,
+        "layout": req.layout, "size": req.size, "rotation": req.rotation,
+        "shadow": req.shadow, "radius": req.radius,
+        "labels": req.labels, "width": w, "height": h,
+    }
+    key = hashlib.md5(json.dumps(
+        {**opts_base, "front": str(front), "back": str(back),
+         "frames": frames_n, "fps": fps, "amp": amp, "base_persp": base_persp},
+        sort_keys=True,
+    ).encode()).hexdigest()[:16]
+    out = MOCKUP_OUT_DIR / f"mockup_spin_{key}.gif"
+    if not out.exists():
+        from PIL import Image
+        pil_frames = []
+        for i in range(frames_n):
+            t = i / frames_n
+            persp = max(0.0, min(base_persp + amp * math.sin(2 * math.pi * t), 100.0))
+            img = mockupsvc.render({**opts_base, "perspective": persp}, front, back)
+            pil_frames.append(img.convert("P", palette=Image.ADAPTIVE, colors=256))
+        pil_frames[0].save(
+            out, "GIF", save_all=True, append_images=pil_frames[1:],
+            duration=round(1000 / fps), loop=0, optimize=True,
+        )
+    return {"url": f"/generated/mockups/{out.name}"}
 
 
 # ------------------------------------------------------------------ image prep

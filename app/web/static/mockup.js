@@ -9,6 +9,7 @@ const DEFAULTS = {
   layout: "side",
   size: 60, rotation: 0, perspective: 32, shadow: 55, radius: 30,
   labels: false,
+  gifFrames: 24, gifFps: 12, gifAmp: 18,
 };
 
 const state = {
@@ -25,6 +26,11 @@ function toast(msg, isErr = false, ms = 4200) {
   t.classList.remove("hidden");
   clearTimeout(toast._h);
   toast._h = setTimeout(() => t.classList.add("hidden"), ms);
+}
+
+function busy(on, text = "Working…") {
+  $("#busy").classList.toggle("hidden", !on);
+  $("#busyText").textContent = text;
 }
 
 async function api(path, opts = {}) {
@@ -259,6 +265,19 @@ function bindControls() {
     scheduleRender();
   });
 
+  const gifSliders = [
+    ["ctlGifFrames", "gifFrames", "valGifFrames", (v) => v],
+    ["ctlGifFps", "gifFps", "valGifFps", (v) => v + " fps"],
+    ["ctlGifAmp", "gifAmp", "valGifAmp", (v) => v],
+  ];
+  for (const [id, key, valId, fmt] of gifSliders) {
+    const el = $("#" + id);
+    el.addEventListener("input", () => {
+      state[key] = parseInt(el.value, 10);
+      $("#" + valId).textContent = fmt(state[key]);
+    });
+  }
+
   $("#btnReset").addEventListener("click", () => {
     Object.assign(state, { scene: DEFAULTS.scene, bg: DEFAULTS.bg, layout: DEFAULTS.layout,
       size: DEFAULTS.size, rotation: DEFAULTS.rotation, perspective: DEFAULTS.perspective,
@@ -317,6 +336,33 @@ async function downloadMockup() {
   }
 }
 
+async function downloadSpinGif() {
+  if (!state.front && !state.back) {
+    toast("Upload a front or back image first.", true);
+    return;
+  }
+  const w = Math.max(320, Math.min(1280, parseInt($("#expW").value, 10) || 1280));
+  const h = Math.max(240, Math.min(1280, parseInt($("#expH").value, 10) || 800));
+  const name = `bizcardbd-mockup-spin-${sides().join("-")}.gif`;
+  busy(true, "Rendering spin GIF…");
+  try {
+    const res = await postJSON("/api/mockup/render-gif", payload(w, h, {
+      frames: state.gifFrames, fps: state.gifFps, spin_amplitude: state.gifAmp,
+    }));
+    const blob = await (await fetch(res.url + "?v=" + Date.now())).blob();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    toast(`Saved ${name} (${w} × ${h}) — also in generated/mockups/`);
+  } catch (e) {
+    toast(e.message, true);
+  } finally {
+    busy(false);
+  }
+}
+
 // ---------------------------------------------------------------- present
 
 async function openPresent() {
@@ -354,6 +400,7 @@ async function init() {
   bindControls();
 
   $("#btnDownload").addEventListener("click", downloadMockup);
+  $("#btnDownloadGif").addEventListener("click", downloadSpinGif);
   $("#btnPresent").addEventListener("click", openPresent);
   $("#presentClose").addEventListener("click", closePresent);
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") closePresent(); });

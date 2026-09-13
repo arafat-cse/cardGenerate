@@ -6,8 +6,10 @@ size). build_all() writes templates/template-XX/template.json and renders a
 preview.png thumbnail for each (using sample data) on first startup.
 """
 
+import copy
 import json
 import re
+import shutil
 
 from PIL import Image
 
@@ -15,6 +17,8 @@ from .config import DEFAULT_LOGO, TEMPLATES_DIR
 from .services import qrsvc
 from .services.layout import qr_invert
 from .services.render import render_stacked
+
+CUSTOM_ID_FLOOR = 100
 
 TEMPLATE_VERSION = 6
 
@@ -765,6 +769,19 @@ def _fix_rect_qr_panel(tpl: dict) -> None:
                 }
 
 
+def _render_thumbnail(tpl: dict) -> Image.Image:
+    """Render the sample-data preview used both for build_all()'s thumbnails
+    and, for custom templates, as a validation pass before anything is
+    written to disk (a malformed template raises here)."""
+    logo = DEFAULT_LOGO if DEFAULT_LOGO.is_file() else None
+    qr_img = qrsvc.build({"type": "vcard", "value": "", "logo_in_qr": False},
+                         SAMPLE_DATA, None,
+                         invert=qr_invert(tpl), logo_in_qr=False)
+    img = render_stacked(tpl, SAMPLE_DATA, {"logo": logo, "photo": None}, qr_img, 150)
+    img.thumbnail((520, 4000), Image.LANCZOS)
+    return img
+
+
 def build_all(force: bool = False) -> None:
     for tpl in templates():
         _fix_rect_qr_panel(tpl)
@@ -786,13 +803,7 @@ def build_all(force: bool = False) -> None:
             DEFAULT_LOGO.is_file() and DEFAULT_LOGO.stat().st_mtime > thumb.stat().st_mtime
         )
         if stale:
-            logo = DEFAULT_LOGO if DEFAULT_LOGO.is_file() else None
-            qr_img = qrsvc.build({"type": "vcard", "value": "", "logo_in_qr": False},
-                                 SAMPLE_DATA, None,
-                                 invert=qr_invert(tpl), logo_in_qr=False)
-            img = render_stacked(tpl, SAMPLE_DATA, {"logo": logo, "photo": None}, qr_img, 150)
-            img.thumbnail((520, 4000), Image.LANCZOS)
-            img.save(thumb)
+            _render_thumbnail(tpl).save(thumb)
 
 
 def load(template_id: str) -> dict | None:
@@ -815,5 +826,100 @@ def list_templates() -> list[dict]:
                     "id": t["id"], "name": t.get("name", t["id"]),
                     "desc": t.get("desc", ""),
                     "preview": f"/templates/{t['id']}/preview.png",
+                    "is_custom": _is_custom_id(t["id"]),
                 })
     return out
+
+
+# --------------------------------------------------------------- custom templates
+# Built-ins live at template-01..template-20 and are rewritten by build_all()
+# on every startup. Custom templates (made in the visual editor) get ids
+# above CUSTOM_ID_FLOOR so build_all() never touches them and they survive
+# restarts; load()/list_templates() above are already generic over any
+# template-<N> dir, so no changes were needed there.
+
+def _builtin_ids() -> set[str]:
+    return {t["id"] for t in templates()}
+
+
+def _is_custom_id(template_id: str) -> bool:
+    m = re.fullmatch(r"template-(\d{1,3})", template_id)
+    return bool(m) and int(m.group(1)) > CUSTOM_ID_FLOOR and template_id not in _builtin_ids()
+
+
+def next_custom_id() -> str:
+    highest = CUSTOM_ID_FLOOR
+    if TEMPLATES_DIR.is_dir():
+        for d in TEMPLATES_DIR.iterdir():
+            m = re.fullmatch(r"template-(\d{1,3})", d.name)
+            if m:
+                highest = max(highest, int(m.group(1)))
+    return f"template-{highest + 1}"
+
+
+def _blank_template(new_id: str, name: str) -> dict:
+    return {
+        "id": new_id, "name": name, "desc": "Custom template", "v": TEMPLATE_VERSION,
+        "palette": {"bg": "#ffffff", "ink": "#111827", "sub": "#6b7280",
+                    "accent": "#b45309", "line": "#e5e7eb", "panel": "#f3f4f6"},
+        "sides": {
+            "front": {
+                "background": [{"t": "rect", "x": 0, "y": 0, "w": 1, "h": 1, "fill": "bg", "bleed": True}],
+                "elements": [
+                    {"t": "image", "role": "logo", "x": 0.72, "y": 0.08, "w": 0.20, "h": 0.16, "fit": "contain"},
+                    {"t": "text", "field": "name", "x": 0.08, "y": 0.42, "w": 0.60, "h": 0.12,
+                     "size": 14, "font": "sansBold", "color": "ink", "align": "left"},
+                    {"t": "text", "field": "title", "x": 0.08, "y": 0.56, "w": 0.60, "h": 0.06,
+                     "size": 8, "font": "sans", "color": "sub", "align": "left"},
+                ],
+            },
+            "back": {
+                "background": [{"t": "rect", "x": 0, "y": 0, "w": 1, "h": 1, "fill": "bg", "bleed": True}],
+                "elements": [
+                    {"t": "qr", "x": 0.37, "y": 0.29, "w": 0.26, "h": 0.415},
+                ],
+            },
+        },
+    }
+
+
+def save_custom(tpl: dict) -> None:
+    """Validate (by rendering) and persist a custom template + its thumbnail.
+    Raises ValueError if tpl["id"] isn't a valid custom id, or if the
+    template fails to render (malformed schema)."""
+    tid = tpl.get("id", "")
+    if not _is_custom_id(tid):
+        raise ValueError(f"Not a custom template id: {tid!r}")
+    try:
+        thumb_img = _render_thumbnail(tpl)
+    except Exception as e:
+        raise ValueError(f"Template failed to render: {e}") from e
+    tdir = TEMPLATES_DIR / tid
+    tdir.mkdir(parents=True, exist_ok=True)
+    (tdir / "template.json").write_text(json.dumps(tpl, indent=2, ensure_ascii=False), encoding="utf-8")
+    thumb_img.save(tdir / "preview.png")
+
+
+def new_custom(name: str, source_id: str | None) -> dict:
+    new_id = next_custom_id()
+    if source_id:
+        src = load(source_id)
+        if not src:
+            raise ValueError(f"Unknown source template: {source_id!r}")
+        tpl = copy.deepcopy(src)
+        tpl["id"] = new_id
+        tpl["name"] = name or src.get("name", new_id)
+        tpl["v"] = TEMPLATE_VERSION
+        _fix_rect_qr_panel(tpl)
+    else:
+        tpl = _blank_template(new_id, name or "Untitled")
+    save_custom(tpl)
+    return tpl
+
+
+def delete_custom(template_id: str) -> None:
+    if not _is_custom_id(template_id):
+        raise ValueError(f"Not a custom template id: {template_id!r}")
+    tdir = TEMPLATES_DIR / template_id
+    if tdir.is_dir():
+        shutil.rmtree(tdir)

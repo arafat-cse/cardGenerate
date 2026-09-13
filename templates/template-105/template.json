@@ -1,0 +1,116 @@
+{
+  "id": "template-105",
+  "name": "Portrait Focus copy",
+  "desc": "Big circular photo on the right, contacts on the left",
+  "v": 6,
+  "palette": {
+    "bg": "#FFFFFF",
+    "ink": "#2D2A26",
+    "sub": "#8A8378",
+    "accent": "#C05621",
+    "line": "#C05621",
+    "panel": "#F5EDE4"
+  },
+  "sides": {
+    "front": {
+      "background": [
+        {
+          "t": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "fill": "bg",
+          "bleed": true
+        },
+        {
+          "t": "ellipse",
+          "x": 0.565,
+          "y": 0.145,
+          "w": 0.37,
+          "h": 0.71,
+          "stroke": "accent",
+          "strokeW": 1,
+          "circle": true
+        },
+        {
+          "t": "rect",
+          "x": 0.032,
+          "y": 0.032,
+          "w": 0.9359999999999999,
+          "h": 0.9359999999999999,
+          "stroke": "accent",
+          "strokeW": 0.42
+        }
+      ],
+      "elements": [
+        {
+          "t": "image",
+          "role": "photo",
+          "x": 0.585,
+          "y": 0.175,
+          "w": 0.33,
+          "h": 0.64,
+          "fit": "cover",
+          "shape": "circle",
+          "fallback_logo": true,
+          "fb_fill": "panel",
+          "fb_size": 8,
+          "fb_font": "sansBold",
+          "fb_color": "accent"
+        },
+        {
+          "t": "text",
+          "field": "company",
+          "x": 0.07,
+          "y": 0.125,
+          "w": 0.46,
+          "h": 0.06,
+          "size": 9.5,
+          "font": "sansBold",
+          "color": "accent",
+          "align": "left",
+          "caps": true,
+          "track": 0.14
+        },
+        {
+          "t": "text",
+          "field": "name",
+          "x": 0.07,
+          "y": 0.4,
+          "w": 0.46,
+          "h": 0.09,
+          "size": 11.5,
+          "font": "sansBold",
+          "color": "ink",
+          "align": "left"
+        },
+        {
+          "t": "line",
+          "x1": 0.07,
+          "y1": 0.6,
+          "x2": 0.17,
+          "y2": 0.6,
+          "stroke": "accent",
+          "w": 0.7
+        }
+      ]
+    },
+    "back": {
+      "background": [
+        {
+          "t": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "fill": "bg",
+          "bleed": true
+        }
+      ],
+      "dynamic": "qr_back",
+      "invert": false,
+      "line_key": "line"
+    }
+  }
+}

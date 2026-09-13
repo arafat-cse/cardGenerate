@@ -1,0 +1,162 @@
+{
+  "id": "template-103",
+  "name": "Azure Bold copy",
+  "desc": "Deep blue with a cyan edge stripe",
+  "v": 6,
+  "palette": {
+    "bg": "#0A3D91",
+    "ink": "#FFFFFF",
+    "sub": "#BBD0F0",
+    "accent": "#38BDF8",
+    "line": "#38BDF8",
+    "panel": "#FFFFFF"
+  },
+  "sides": {
+    "front": {
+      "background": [
+        {
+          "t": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "fill": "bg",
+          "bleed": true
+        },
+        {
+          "t": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 0.02,
+          "h": 1,
+          "fill": "accent",
+          "bleed": true
+        },
+        {
+          "t": "rect",
+          "x": 0.032,
+          "y": 0.032,
+          "w": 0.9359999999999999,
+          "h": 0.9359999999999999,
+          "stroke": "accent",
+          "strokeW": 0.42
+        }
+      ],
+      "elements": [
+        {
+          "t": "text",
+          "field": "company",
+          "x": 0.07,
+          "y": 0.115,
+          "w": 0.5,
+          "h": 0.065,
+          "size": 10.5,
+          "font": "sansBold",
+          "color": "ink",
+          "align": "left",
+          "caps": true,
+          "track": 0.16
+        },
+        {
+          "t": "image",
+          "role": "logo",
+          "x": 0.72,
+          "y": 0.075,
+          "w": 0.21,
+          "h": 0.165,
+          "fit": "contain"
+        },
+        {
+          "t": "text",
+          "field": "name",
+          "x": 0.07,
+          "y": 0.43,
+          "w": 0.6,
+          "h": 0.095,
+          "size": 12,
+          "font": "sansBold",
+          "color": "ink",
+          "align": "left"
+        },
+        {
+          "t": "text",
+          "field": "title",
+          "x": 0.07,
+          "y": 0.555,
+          "w": 0.6,
+          "h": 0.05,
+          "size": 7.5,
+          "font": "sans",
+          "color": "accent",
+          "align": "left",
+          "caps": true,
+          "track": 0.12
+        },
+        {
+          "t": "line",
+          "x1": 0.07,
+          "y1": 0.675,
+          "x2": 0.205,
+          "y2": 0.675,
+          "stroke": "accent",
+          "w": 0.6
+        },
+        {
+          "t": "text",
+          "field": [
+            "phone",
+            "email"
+          ],
+          "x": 0.07,
+          "y": 0.715,
+          "w": 0.6,
+          "h": 0.05,
+          "size": 7.5,
+          "font": "sans",
+          "color": "ink",
+          "align": "left"
+        },
+        {
+          "t": "text",
+          "field": "website",
+          "x": 0.07,
+          "y": 0.78,
+          "w": 0.6,
+          "h": 0.05,
+          "size": 7.5,
+          "font": "sans",
+          "color": "accent",
+          "align": "left"
+        },
+        {
+          "t": "text",
+          "field": "address",
+          "x": 0.07,
+          "y": 0.845,
+          "w": 0.6,
+          "h": 0.05,
+          "size": 7,
+          "font": "sans",
+          "color": "sub",
+          "align": "left"
+        }
+      ]
+    },
+    "back": {
+      "background": [
+        {
+          "t": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "fill": "bg",
+          "bleed": true
+        }
+      ],
+      "dynamic": "qr_back",
+      "invert": true,
+      "line_key": "line"
+    }
+  }
+}

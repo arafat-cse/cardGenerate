@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bizcardbd — Template Editor</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23111827'/%3E%3Crect x='5' y='9' width='22' height='14' rx='3' fill='none' stroke='%23f59e0b' stroke-width='2'/%3E%3Ccircle cx='11' cy='16' r='2.4' fill='%23f59e0b'/%3E%3Crect x='16' y='13' width='8' height='2' rx='1' fill='%23e5e7eb'/%3E%3Crect x='16' y='17.5' width='6' height='2' rx='1' fill='%236b7280'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/static/style.css">
+<link rel="stylesheet" href="/static/editor.css">
+</head>
+<body class="editor-body">
+<header>
+  <div class="brand">
+    <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#111827"/><rect x="5" y="9" width="22" height="14" rx="3" fill="none" stroke="#f59e0b" stroke-width="2"/><circle cx="11" cy="16" r="2.4" fill="#f59e0b"/><rect x="16" y="13" width="8" height="2" rx="1" fill="#e5e7eb"/><rect x="16" y="17.5" width="6" height="2" rx="1" fill="#6b7280"/></svg>
+    Biz<b>cardbd</b>
+  </div>
+  <nav class="nav">
+    <a class="nav-link" href="/">Card Generator</a>
+    <a class="nav-link" href="/mockup.html">Mockup</a>
+    <a class="nav-link" href="/prep.html">Image Remove</a>
+    <a class="nav-link active" href="/editor.html">Template Editor</a>
+  </nav>
+  <div class="head-right">
+    <span id="saveStatus" class="chip subtle">no template loaded</span>
+  </div>
+</header>
+
+<main class="editor-main">
+  <aside class="panel">
+    <section>
+      <h2>New template</h2>
+      <label>Name<input id="newName" placeholder="My template"></label>
+      <button id="newBlank" type="button">+ Blank template</button>
+      <p class="hint">Or click any template below to open it — built-ins open as an editable copy, your own templates open directly.</p>
+    </section>
+    <section>
+      <h2>All templates</h2>
+      <div id="tplList" class="tpl-grid"></div>
+    </section>
+  </aside>
+
+  <section class="stage">
+    <div class="editor-toolbar">
+      <div class="side-tabs">
+        <button data-side="front" class="side-tab sel" type="button" disabled>Front</button>
+        <button data-side="back" class="side-tab" type="button" disabled>Back</button>
+      </div>
+      <div class="tool-btns">
+        <button id="undoBtn" class="ghost" type="button" disabled>Undo</button>
+        <button id="redoBtn" class="ghost" type="button" disabled>Redo</button>
+        <button id="deleteTplBtn" class="ghost danger" type="button" disabled>Delete template</button>
+      </div>
+    </div>
+    <div class="canvas-wrap">
+      <div id="canvas" class="card-canvas">
+        <img id="canvasBg" alt="card preview">
+        <div id="overlayLayer"></div>
+      </div>
+    </div>
+    <p class="muted" id="statusLine">No template loaded — create a blank one or pick a template on the left.</p>
+  </section>
+
+  <aside class="panel">
+    <section>
+      <h2>Template</h2>
+      <label>Name<input id="tplName" placeholder="—" disabled></label>
+    </section>
+
+    <section>
+      <h2>Elements — <span id="sideLabel">front</span></h2>
+      <div id="elementList" class="elem-list"></div>
+      <div class="row2">
+        <button id="addText" class="ghost" type="button" disabled>+ Text</button>
+        <button id="addImage" class="ghost" type="button" disabled>+ Image</button>
+      </div>
+      <div class="row2">
+        <button id="addQr" class="ghost" type="button" disabled>+ QR</button>
+        <button id="addRect" class="ghost" type="button" disabled>+ Shape</button>
+      </div>
+      <div class="row2">
+        <button id="dupElBtn" class="ghost" type="button" disabled>Duplicate</button>
+        <button id="delElBtn" class="ghost danger" type="button" disabled>Delete</button>
+      </div>
+    </section>
+
+    <section id="propSection">
+      <h2>Properties</h2>
+      <p class="muted" id="noSel">Select an element above or on the canvas.</p>
+      <div id="propForm" class="hidden"></div>
+    </section>
+
+    <section>
+      <h2>Palette</h2>
+      <div id="paletteList" class="pal-list"></div>
+      <div class="row2">
+        <input id="newPalKey" placeholder="key name">
+        <input id="newPalColor" type="color" value="#000000">
+      </div>
+      <button id="addPalColor" class="ghost" type="button" disabled>+ Add color</button>
+    </section>
+
+    <section>
+      <h2>Advanced (JSON) — <span id="advSideLabel">front</span></h2>
+      <textarea id="advJson" rows="8" disabled placeholder="Raw config for this side"></textarea>
+      <button id="applyAdv" class="ghost" type="button" disabled>Apply JSON</button>
+      <p class="hint">Covers line/poly shapes, the auto QR-back layout and photo-fallback config — anything the tools above don't show controls for. Applying replaces this side's whole config.</p>
+    </section>
+  </aside>
+</main>
+
+<div id="busy" class="overlay hidden"><div class="spinner"></div><span id="busyText">Working…</span></div>
+<div id="toast" class="toast hidden"></div>
+
+<script src="/static/editor.js"></script>
+</body>
+</html>
