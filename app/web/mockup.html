@@ -19,6 +19,7 @@
     <a class="nav-link active" href="/mockup.html">Mockup</a>
     <a class="nav-link" href="/prep.html">Image Remove</a>
     <a class="nav-link" href="/#templates">Templates</a>
+    <a class="nav-link" href="/editor.html">Template Editor</a>
   </nav>
   <div class="head-right">
     <button id="openFolder" class="ghost" type="button">Open output folder</button>
@@ -99,11 +100,23 @@
         <label id="customWrap" class="hidden">Custom color
           <input type="color" id="customColor" value="#f2f3f5">
         </label>
-        <label id="imageWrap" class="hidden">Background image
-          <select id="bgImageSel"><option value="">— none —</option></select>
-        </label>
+        <div id="imageWrap" class="hidden upbox">
+          <span class="up-title">Background image <em id="stBg" class="mk-state">no file</em></span>
+          <label>Preset
+            <select id="bgImageSel"><option value="">— none —</option></select>
+          </label>
+          <div class="dropzone" data-side="bg"><input type="file" accept="image/*" hidden>
+            <span class="dz-hint">Or click / drop your own photo</span>
+          </div>
+          <div class="thumbrow hidden">
+            <img alt="background">
+            <div class="thumb-btns">
+              <button type="button" class="mini danger" data-clear="bg">Clear</button>
+            </div>
+          </div>
+        </div>
       </div>
-      <p class="hint">Want your own photo backdrop? Drop images into <b>mockups/backgrounds/</b> and they appear here.</p>
+      <p class="hint">Upload your own backdrop above, or drop images into <b>mockups/backgrounds/</b> to add reusable presets.</p>
     </section>
 
     <section id="layoutSec">
@@ -156,8 +169,27 @@
         <button id="btnDownload" class="primary" type="button">Download Mockup PNG</button>
       </div>
     </section>
+
+    <section>
+      <h2>Spin GIF (for social media)</h2>
+      <label class="slider">Frames
+        <span class="slider-line"><input type="range" id="ctlGifFrames" min="8" max="48" value="24"><b id="valGifFrames">24</b></span>
+      </label>
+      <label class="slider">Speed
+        <span class="slider-line"><input type="range" id="ctlGifFps" min="6" max="24" value="12"><b id="valGifFps">12 fps</b></span>
+      </label>
+      <label class="slider">Spin amount
+        <span class="slider-line"><input type="range" id="ctlGifAmp" min="5" max="40" value="18"><b id="valGifAmp">18</b></span>
+      </label>
+      <p class="hint">Loops the card gently turning in 3D — uses the export size above (capped at 1280px for a reasonable file size).</p>
+      <div class="actions">
+        <button id="btnDownloadGif" class="primary" type="button">Download Spin GIF</button>
+      </div>
+    </section>
   </aside>
 </main>
+
+<div id="busy" class="overlay hidden"><div class="spinner"></div><span id="busyText">Rendering…</span></div>
 
 <div id="present" class="mk-present hidden">
   <button id="presentClose" type="button" title="Close (Esc)">✕</button>

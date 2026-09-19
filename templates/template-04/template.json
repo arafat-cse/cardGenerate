@@ -2,7 +2,7 @@
   "id": "template-04",
   "name": "Corporate Band",
   "desc": "Navy header band with logo + company, clean white body",
-  "v": 5,
+  "v": 6,
   "palette": {
     "bg": "#FFFFFF",
     "band": "#1B3A5F",
@@ -34,6 +34,15 @@
           "h": 0.345,
           "fill": "band",
           "bleed": true
+        },
+        {
+          "t": "rect",
+          "x": 0.032,
+          "y": 0.032,
+          "w": 0.9359999999999999,
+          "h": 0.9359999999999999,
+          "stroke": "accent",
+          "strokeW": 0.42
         }
       ],
       "elements": [

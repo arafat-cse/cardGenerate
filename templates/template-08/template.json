@@ -2,7 +2,7 @@
   "id": "template-08",
   "name": "Split Brand",
   "desc": "Solid brand panel on the left, contact block on the right",
-  "v": 5,
+  "v": 6,
   "palette": {
     "bg": "#FFFFFF",
     "panel": "#14532D",
@@ -33,6 +33,15 @@
           "h": 1,
           "fill": "panel",
           "bleed": true
+        },
+        {
+          "t": "rect",
+          "x": 0.032,
+          "y": 0.032,
+          "w": 0.9359999999999999,
+          "h": 0.9359999999999999,
+          "stroke": "accent",
+          "strokeW": 0.42
         }
       ],
       "elements": [

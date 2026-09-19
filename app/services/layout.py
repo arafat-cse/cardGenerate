@@ -23,6 +23,8 @@ def _pt(v_norm: float, card_pt: float) -> float:
 
 
 def resolve_text_field(el: dict, data: dict) -> str:
+    if "lit" in el:
+        return str(el["lit"])
     f = el.get("field")
     if isinstance(f, list):
         parts = [str(data.get(k) or "").strip() for k in f]

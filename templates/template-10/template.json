@@ -2,7 +2,7 @@
   "id": "template-10",
   "name": "Portrait Focus",
   "desc": "Big circular photo on the right, contacts on the left",
-  "v": 5,
+  "v": 6,
   "palette": {
     "bg": "#FFFFFF",
     "ink": "#2D2A26",
@@ -32,6 +32,15 @@
           "stroke": "accent",
           "strokeW": 1.0,
           "circle": true
+        },
+        {
+          "t": "rect",
+          "x": 0.032,
+          "y": 0.032,
+          "w": 0.9359999999999999,
+          "h": 0.9359999999999999,
+          "stroke": "accent",
+          "strokeW": 0.42
         }
       ],
       "elements": [

@@ -1,0 +1,163 @@
+{
+  "id": "template-101",
+  "name": "Classic Ivory copy",
+  "desc": "Ivory paper, gold double frame, centered serif",
+  "v": 6,
+  "palette": {
+    "bg": "#FBF8F1",
+    "ink": "#1E2A3A",
+    "sub": "#6E7A88",
+    "accent": "#B08D3E",
+    "line": "#D9CBA8",
+    "panel": "#FFFFFF"
+  },
+  "sides": {
+    "front": {
+      "background": [
+        {
+          "t": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "fill": "bg",
+          "bleed": true
+        },
+        {
+          "t": "rect",
+          "x": 0.045,
+          "y": 0.06,
+          "w": 0.91,
+          "h": 0.88,
+          "stroke": "accent",
+          "strokeW": 0.6
+        },
+        {
+          "t": "rect",
+          "x": 0.055,
+          "y": 0.072,
+          "w": 0.89,
+          "h": 0.856,
+          "stroke": "accent",
+          "strokeW": 0.25
+        }
+      ],
+      "elements": [
+        {
+          "t": "image",
+          "role": "logo",
+          "x": 0.775,
+          "y": 0.09,
+          "w": 0.14,
+          "h": 0.105,
+          "fit": "contain"
+        },
+        {
+          "t": "text",
+          "field": "company",
+          "x": 0.1,
+          "y": 0.265,
+          "w": 0.8,
+          "h": 0.06,
+          "size": 9,
+          "font": "serifBold",
+          "color": "accent",
+          "align": "center",
+          "caps": true,
+          "track": 0.18
+        },
+        {
+          "t": "line",
+          "x1": 0.43,
+          "y1": 0.345,
+          "x2": 0.57,
+          "y2": 0.345,
+          "stroke": "accent",
+          "w": 0.6
+        },
+        {
+          "t": "text",
+          "field": "name",
+          "x": 0.1,
+          "y": 0.385,
+          "w": 0.8,
+          "h": 0.105,
+          "size": 13,
+          "font": "serifBold",
+          "color": "ink",
+          "align": "center",
+          "caps": true,
+          "track": 0.06
+        },
+        {
+          "t": "text",
+          "field": "title",
+          "x": 0.1,
+          "y": 0.505,
+          "w": 0.8,
+          "h": 0.055,
+          "size": 7.5,
+          "font": "sans",
+          "color": "sub",
+          "align": "center",
+          "caps": true,
+          "track": 0.16
+        },
+        {
+          "t": "text",
+          "field": [
+            "phone",
+            "email"
+          ],
+          "x": 0.1,
+          "y": 0.68,
+          "w": 0.8,
+          "h": 0.055,
+          "size": 7.5,
+          "font": "sans",
+          "color": "ink",
+          "align": "center"
+        },
+        {
+          "t": "text",
+          "field": [
+            "website",
+            "address"
+          ],
+          "x": 0.1,
+          "y": 0.755,
+          "w": 0.8,
+          "h": 0.055,
+          "size": 7,
+          "font": "sans",
+          "color": "sub",
+          "align": "center"
+        },
+        {
+          "t": "qr",
+          "x": 0.845,
+          "y": 0.795,
+          "w": 0.09,
+          "h": 0.125,
+          "invert": false
+        }
+      ]
+    },
+    "back": {
+      "background": [
+        {
+          "t": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "fill": "bg",
+          "bleed": true
+        }
+      ],
+      "dynamic": "qr_back",
+      "invert": false,
+      "line_key": "line"
+    }
+  }
+}

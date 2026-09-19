@@ -1,0 +1,210 @@
+{
+  "id": "template-14",
+  "name": "Gold Foil Onyx",
+  "desc": "Onyx black, double gold foil frame, centered serif — metal card",
+  "v": 6,
+  "palette": {
+    "bg": "#000000",
+    "ink": "#FFFFFF",
+    "sub": "#C9C9C9",
+    "accent": "#D4AF37",
+    "line": "#D4AF37",
+    "panel": "#141414"
+  },
+  "sides": {
+    "front": {
+      "background": [
+        {
+          "t": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "fill": "bg",
+          "bleed": true
+        },
+        {
+          "t": "rect",
+          "x": 0.045,
+          "y": 0.045,
+          "w": 0.91,
+          "h": 0.91,
+          "stroke": "accent",
+          "strokeW": 0.55
+        },
+        {
+          "t": "rect",
+          "x": 0.06,
+          "y": 0.06,
+          "w": 0.88,
+          "h": 0.88,
+          "stroke": "accent",
+          "strokeW": 0.22
+        },
+        {
+          "t": "rect",
+          "x": 0.055,
+          "y": 0.855,
+          "w": 0.115,
+          "h": 0.078,
+          "fill": "accent",
+          "radius": 0.018
+        },
+        {
+          "t": "line",
+          "x1": 0.0941,
+          "y1": 0.86124,
+          "x2": 0.0941,
+          "y2": 0.92676,
+          "stroke": "bg",
+          "w": 0.35
+        },
+        {
+          "t": "line",
+          "x1": 0.13090000000000002,
+          "y1": 0.86124,
+          "x2": 0.13090000000000002,
+          "y2": 0.92676,
+          "stroke": "bg",
+          "w": 0.35
+        },
+        {
+          "t": "line",
+          "x1": 0.06420000000000001,
+          "y1": 0.894,
+          "x2": 0.1608,
+          "y2": 0.894,
+          "stroke": "bg",
+          "w": 0.35
+        }
+      ],
+      "elements": [
+        {
+          "t": "image",
+          "role": "logo",
+          "x": 0.775,
+          "y": 0.09,
+          "w": 0.14,
+          "h": 0.105,
+          "fit": "contain"
+        },
+        {
+          "t": "text",
+          "field": "company",
+          "x": 0.1,
+          "y": 0.2,
+          "w": 0.8,
+          "h": 0.06,
+          "size": 9,
+          "font": "serifBold",
+          "color": "accent",
+          "align": "center",
+          "caps": true,
+          "track": 0.18
+        },
+        {
+          "t": "line",
+          "x1": 0.43,
+          "y1": 0.285,
+          "x2": 0.57,
+          "y2": 0.285,
+          "stroke": "accent",
+          "w": 0.6
+        },
+        {
+          "t": "text",
+          "field": "name",
+          "x": 0.1,
+          "y": 0.325,
+          "w": 0.8,
+          "h": 0.105,
+          "size": 13,
+          "font": "serifBold",
+          "color": "ink",
+          "align": "center",
+          "caps": true,
+          "track": 0.06
+        },
+        {
+          "t": "text",
+          "field": "title",
+          "x": 0.1,
+          "y": 0.445,
+          "w": 0.8,
+          "h": 0.055,
+          "size": 7.5,
+          "font": "sans",
+          "color": "sub",
+          "align": "center",
+          "caps": true,
+          "track": 0.16
+        },
+        {
+          "t": "text",
+          "field": [
+            "phone",
+            "email"
+          ],
+          "x": 0.1,
+          "y": 0.605,
+          "w": 0.8,
+          "h": 0.055,
+          "size": 7.5,
+          "font": "sans",
+          "color": "ink",
+          "align": "center"
+        },
+        {
+          "t": "text",
+          "field": "website",
+          "x": 0.1,
+          "y": 0.675,
+          "w": 0.8,
+          "h": 0.05,
+          "size": 7.5,
+          "font": "sans",
+          "color": "accent",
+          "align": "center"
+        },
+        {
+          "t": "text",
+          "lit": "NFC",
+          "x": 0.185,
+          "y": 0.863,
+          "w": 0.12,
+          "h": 0.045,
+          "size": 6.5,
+          "font": "sansBold",
+          "color": "accent",
+          "align": "left",
+          "caps": true,
+          "track": 0.32
+        },
+        {
+          "t": "qr",
+          "x": 0.845,
+          "y": 0.785,
+          "w": 0.1,
+          "h": 0.14,
+          "invert": true
+        }
+      ]
+    },
+    "back": {
+      "background": [
+        {
+          "t": "rect",
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 1,
+          "fill": "bg",
+          "bleed": true
+        }
+      ],
+      "dynamic": "qr_back",
+      "invert": true,
+      "line_key": "line"
+    }
+  }
+}

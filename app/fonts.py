@@ -11,35 +11,64 @@ SEARCH_DIRS = [
     FONTS_DIR,  # project fonts folder - drop any .ttf here to use it
     _WINDIR / "Fonts",
     Path.home() / "AppData" / "Local" / "Microsoft" / "Windows" / "Fonts",
+    # Linux
+    Path("/usr/share/fonts"),
+    Path("/usr/local/share/fonts"),
+    Path.home() / ".fonts",
+    Path.home() / ".local" / "share" / "fonts",
+    # macOS
+    Path("/Library/Fonts"),
+    Path("/System/Library/Fonts"),
+    Path.home() / "Library" / "Fonts",
 ]
 
-# (filename, illustrator postscript name, family, style)
+# (filename, illustrator postscript name, family, style) - Windows/Office
+# names first, then the DejaVu / Liberation / Noto faces Linux and Mac
+# actually ship, so the app renders without any manual font install.
 _FAMILIES = {
     "sans": [
         ("segoeui.ttf", "SegoeUI", "Segoe UI", "Regular"),
         ("arial.ttf", "ArialMT", "Arial", "Regular"),
         ("tahoma.ttf", "Tahoma", "Tahoma", "Regular"),
+        ("DejaVuSans.ttf", "DejaVuSans", "DejaVu Sans", "Regular"),
+        ("LiberationSans-Regular.ttf", "LiberationSans", "Liberation Sans", "Regular"),
+        ("NotoSans-Regular.ttf", "NotoSans", "Noto Sans", "Regular"),
     ],
     "sansBold": [
         ("segoeuib.ttf", "SegoeUI-Bold", "Segoe UI", "Bold"),
         ("arialbd.ttf", "Arial-BoldMT", "Arial", "Bold"),
         ("tahomabd.ttf", "Tahoma-Bold", "Tahoma", "Bold"),
+        ("DejaVuSans-Bold.ttf", "DejaVuSans-Bold", "DejaVu Sans", "Bold"),
+        ("LiberationSans-Bold.ttf", "LiberationSans-Bold", "Liberation Sans", "Bold"),
+        ("NotoSans-Bold.ttf", "NotoSans-Bold", "Noto Sans", "Bold"),
     ],
     "serif": [
         ("georgia.ttf", "Georgia", "Georgia", "Regular"),
         ("times.ttf", "TimesNewRomanPSMT", "Times New Roman", "Regular"),
+        ("DejaVuSerif.ttf", "DejaVuSerif", "DejaVu Serif", "Regular"),
+        ("LiberationSerif-Regular.ttf", "LiberationSerif", "Liberation Serif", "Regular"),
+        ("NotoSerif-Regular.ttf", "NotoSerif", "Noto Serif", "Regular"),
     ],
     "serifBold": [
         ("georgiab.ttf", "Georgia-Bold", "Georgia", "Bold"),
         ("timesbd.ttf", "TimesNewRomanPS-BoldMT", "Times New Roman", "Bold"),
+        ("DejaVuSerif-Bold.ttf", "DejaVuSerif-Bold", "DejaVu Serif", "Bold"),
+        ("LiberationSerif-Bold.ttf", "LiberationSerif-Bold", "Liberation Serif", "Bold"),
+        ("NotoSerif-Bold.ttf", "NotoSerif-Bold", "Noto Serif", "Bold"),
     ],
     "serifItal": [
         ("georgiai.ttf", "Georgia-Italic", "Georgia", "Italic"),
         ("timesi.ttf", "TimesNewRomanPS-ItalicMT", "Times New Roman", "Italic"),
+        ("DejaVuSerif-Italic.ttf", "DejaVuSerif-Italic", "DejaVu Serif", "Italic"),
+        ("LiberationSerif-Italic.ttf", "LiberationSerif-Italic", "Liberation Serif", "Italic"),
+        ("NotoSerif-Italic.ttf", "NotoSerif-Italic", "Noto Serif", "Italic"),
     ],
     "mono": [
         ("consola.ttf", "Consolas", "Consolas", "Regular"),
         ("cour.ttf", "CourierNewPSMT", "Courier New", "Regular"),
+        ("DejaVuSansMono.ttf", "DejaVuSansMono", "DejaVu Sans Mono", "Regular"),
+        ("LiberationMono-Regular.ttf", "LiberationMono", "Liberation Mono", "Regular"),
+        ("NotoSansMono-Regular.ttf", "NotoSansMono", "Noto Sans Mono", "Regular"),
     ],
 }
 
@@ -59,12 +88,25 @@ def _find(patterns: list[str]) -> Path | None:
         if not d.is_dir():
             continue
         for pat in patterns:
+            # rglob: system font dirs (e.g. /usr/share/fonts) nest files
+            # under per-family subdirectories, not flat.
             hits = sorted(
-                p for p in d.glob(pat)
+                p for p in d.rglob(pat)
                 if p.is_file() and p.suffix.lower() in (".ttf", ".otf")
             )
             if hits:
                 return hits[0]
+    return None
+
+
+def _any_font() -> Path | None:
+    """Absolute last resort: the first .ttf/.otf found anywhere searched."""
+    for d in SEARCH_DIRS:
+        if not d.is_dir():
+            continue
+        hits = sorted(p for p in list(d.rglob("*.ttf")) + list(d.rglob("*.otf")) if p.is_file())
+        if hits:
+            return hits[0]
     return None
 
 
@@ -97,8 +139,14 @@ def resolve(family_key: str) -> dict:
         p = _find([fname])
         if p:
             return _info(p, [ps], fam, sty)
-    p = _find(["arial.ttf"]) or _FAMILIES["sans"][0][0]
-    return _info(Path(p), ["ArialMT"], "Arial", "Regular")
+    p = _any_font()
+    if p is None:
+        raise RuntimeError(
+            "No usable fonts found on this system. Drop any .ttf files into "
+            f"the project's {FONTS_DIR} folder, or install some "
+            "(e.g. `sudo apt install fonts-dejavu-core fonts-liberation`)."
+        )
+    return _info(p, ["ArialMT"], "Arial", "Regular")
 
 
 @lru_cache(maxsize=128)

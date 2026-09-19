@@ -2,7 +2,7 @@
   "id": "template-01",
   "name": "Noir Classic",
   "desc": "Black card, Old-English name — front logo + back QR",
-  "v": 5,
+  "v": 6,
   "palette": {
     "bg": "#0B0B0D",
     "ink": "#FFFFFF",
@@ -22,6 +22,15 @@
           "h": 1,
           "fill": "bg",
           "bleed": true
+        },
+        {
+          "t": "rect",
+          "x": 0.032,
+          "y": 0.032,
+          "w": 0.9359999999999999,
+          "h": 0.9359999999999999,
+          "stroke": "accent",
+          "strokeW": 0.42
         }
       ],
       "elements": [
